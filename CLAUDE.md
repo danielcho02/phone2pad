@@ -68,7 +68,11 @@ phantompad/
 ## 6. 현재 상태
 
 - [x] Phase 0: 레포 부트스트랩, 프로토콜 라이브러리 + 테스트 벡터
-- [ ] Phase A: 폰 → PC 좌표 전송, 상대좌표 마우스 (SendInput)
+- [~] Phase A: 폰 → PC 좌표 전송, 상대좌표 마우스 (SendInput)
+      - 구현 완료: Android :app(landscape BlackPadActivity + PadSocketServer),
+        PC client(AdbManager/FrameReceiver/MouseSink), replay/recorder 도구
+      - 자동 테스트 통과: proto(L1) + client/replay(L2/L3), :app:assembleDebug
+      - 실기기 검증(L4) 대기: 콜드스타트·탭/더블탭·RTT p95<5ms·표준 트레이스 5종 녹화
 - [ ] Phase B: user-mode 제스처 판별 + 단축키 주입 (사용 가능한 MVP)
 - [ ] Phase C: PTP 가상 HID 드라이버 (네이티브 트랙패드 인식)
 - [ ] Phase D: 폴리시 — 팜 리젝션, 햅틱, 전력 최적화

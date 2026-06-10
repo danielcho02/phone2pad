@@ -1,0 +1,6 @@
+# Single finger: down, move right+down, lift. Travel exceeds tap threshold so the
+# lift is NOT a tap. Used by L3 replay test (cursor moves, no click).
+{"t": 0, "contacts": [{"id":0,"tip":1,"x":100,"y":100}]}
+{"t": 8333, "contacts": [{"id":0,"tip":1,"x":110,"y":105}]}
+{"t": 16666, "contacts": [{"id":0,"tip":1,"x":125,"y":115}]}
+{"t": 25000, "contacts": [{"id":0,"tip":0,"x":125,"y":115}]}

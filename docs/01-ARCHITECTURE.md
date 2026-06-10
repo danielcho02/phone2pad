@@ -72,11 +72,15 @@
 
 ## 4. 좌표계 규약
 
-- 폰: 픽셀 단위 절대좌표, 원점 좌상단, **세로 모드 기준 그대로 전송**
-  (가로 회전 변환은 PC가 HELLO의 해상도 + 방향 필드로 수행)
+- **Phase A 기본은 landscape pad mode**(폰을 책상 위에 가로로 눕혀 노트북 터치패드처럼 사용).
+- 폰: 픽셀 단위 절대좌표, **landscape Activity 좌표계 그대로 전송**
+  (원점 = landscape 상태의 좌상단, X축 = 폰의 긴 가로축, Y축 = 폰의 짧은 세로축).
+  폰은 회전/스케일/스무딩을 하지 않으며, 좌표 범위·방향 해석은 PC가 HELLO의
+  `screenWidthPx`/`screenHeightPx`/`rotation`(실제 Activity 좌표계 기준)으로 수행한다.
 - PTP 보고서: logical range는 디스크립터에 선언된 값으로 PC가 스케일링
 - 물리 크기: HELLO에 폰의 xdpi/ydpi 포함 → 디스크립터의 physical extent 계산에 사용
   (WPT 제스처 엔진은 물리 크기 기반으로 이동 거리를 해석하므로 중요)
+- Phase C에서 필요 시 디스크립터/물리 크기와 일관되게 좌표·방향 규약을 재정리한다.
 
 ## 5. 실패 모드 처리
 

@@ -52,14 +52,22 @@ if (-not $cmake) {
     if ($?) {
         & $cmake --build pc/build --config Debug
         if ($?) {
-            $exe = 'pc/build/client/proto/tests/Debug/proto_tests.exe'
-            if (Test-Path $exe) {
-                & $exe
-                if ($?) { $results['cpp'] = 'PASS' } else { $results['cpp'] = 'FAIL (tests)' }
-            } else {
-                Write-Warning "proto_tests.exe not found at $exe"
-                $results['cpp'] = 'FAIL (missing exe)'
+            # Run each test exe; all must exist and pass (proto = L1, client = L2/L3).
+            $exes = @(
+                'pc/build/client/proto/tests/Debug/proto_tests.exe',
+                'pc/build/client/tests/Debug/client_tests.exe'
+            )
+            $cppOk = $true
+            foreach ($exe in $exes) {
+                if (Test-Path $exe) {
+                    & $exe
+                    if (-not $?) { $cppOk = $false }
+                } else {
+                    Write-Warning "test exe not found at $exe"
+                    $cppOk = $false
+                }
             }
+            if ($cppOk) { $results['cpp'] = 'PASS' } else { $results['cpp'] = 'FAIL (tests)' }
         } else { $results['cpp'] = 'FAIL (build)' }
     } else { $results['cpp'] = 'FAIL (configure)' }
 }
@@ -75,7 +83,7 @@ if (-not (Test-Path $wrapperJar)) {
 } else {
     Push-Location (Join-Path $repoRoot 'android')
     try {
-        & .\gradlew.bat :proto:test --console=plain --no-daemon
+        & .\gradlew.bat :proto:test :app:assembleDebug --console=plain --no-daemon
         if ($?) { $results['kotlin'] = 'PASS' } else { $results['kotlin'] = 'FAIL' }
     } finally { Pop-Location }
 }

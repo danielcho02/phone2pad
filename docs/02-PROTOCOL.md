@@ -33,11 +33,11 @@ offset  size  field
 ```
 offset  size  field
 0       1     protocolVersion = 1
-1       2     screenWidthPx   (u16)  세로 기준
-3       2     screenHeightPx  (u16)
+1       2     screenWidthPx   (u16)  실제 Activity 좌표계 기준 (Phase A=landscape: 긴 변)
+3       2     screenHeightPx  (u16)  실제 Activity 좌표계 기준 (Phase A=landscape: 짧은 변)
 5       2     xdpi_x10        (u16)  xdpi * 10 (예: 421.7 → 4217)
 7       2     ydpi_x10        (u16)
-9       1     rotation        0=0°, 1=90°, 2=180°, 3=270°
+9       1     rotation        Activity 방향 반영 (0=0°, 1=90°, 2=180°, 3=270°)
 10      1     maxContacts     폰이 지원하는 동시 터치 수 (보통 10)
 ```
 
@@ -56,7 +56,7 @@ contact (6 bytes):
 0       1     contactId   MotionEvent pointerId (안정적 ID)
 1       1     flags       bit0: tip (1=닿음, 0=lift 중)
                           bit1: confidence (1=정상, 0=팜 의심)
-2       2     x           (u16) 픽셀, 세로 기준 절대좌표
+2       2     x           (u16) 픽셀, Activity 좌표계 절대좌표 (Phase A=landscape, 원점 좌상단)
 4       2     y           (u16)
 ```
 

@@ -10,7 +10,7 @@ struct Contact {
     std::uint8_t id = 0;        // MotionEvent pointerId (stable within a session)
     bool tip = false;          // flags bit0
     bool confidence = true;    // flags bit1
-    std::uint16_t x = 0;       // pixels, portrait-reference absolute coords
+    std::uint16_t x = 0;       // pixels, Activity-frame absolute coords (Phase A=landscape)
     std::uint16_t y = 0;
 
     friend bool operator==(const Contact&, const Contact&) = default;

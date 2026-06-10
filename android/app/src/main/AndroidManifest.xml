@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Localhost TCP listen for the adb-forwarded PC client. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:allowBackup="false"
+        android:icon="@android:drawable/ic_menu_view"
+        android:label="PhantomPad"
+        android:supportsRtl="false"
+        android:theme="@style/Theme.PhantomPad.Black">
+
+        <!-- Landscape "pad" Activity. Exported so the PC client can launch it via
+             `adb shell am start -n com.phantompad/.BlackPadActivity`. -->
+        <activity
+            android:name=".BlackPadActivity"
+            android:exported="true"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

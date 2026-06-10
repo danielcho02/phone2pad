@@ -1,0 +1,6 @@
+# Two quick taps in place (double-tap). Each press is short and barely moves, so
+# each lift is a left click -> two clicks total. Used by L3 replay test.
+{"t": 0, "contacts": [{"id":0,"tip":1,"x":200,"y":200}]}
+{"t": 20000, "contacts": [{"id":0,"tip":0,"x":200,"y":200}]}
+{"t": 120000, "contacts": [{"id":0,"tip":1,"x":202,"y":201}]}
+{"t": 140000, "contacts": [{"id":0,"tip":0,"x":202,"y":201}]}

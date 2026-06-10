@@ -1,0 +1,15 @@
+{
+  "name": "hello_basic",
+  "description": "HELLO at connect: 1080x2400, 421.7/421.7 dpi, portrait, 10 contacts",
+  "packet_hex": "a7010b00013804600979107910000a",
+  "decoded": {
+    "type": "HELLO",
+    "protocolVersion": 1,
+    "screenWidthPx": 1080,
+    "screenHeightPx": 2400,
+    "xdpiX10": 4217,
+    "ydpiX10": 4217,
+    "rotation": 0,
+    "maxContacts": 10
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "name": "touch_frame_2contacts",
+  "description": "Two contacts, one with confidence=0 (palm-suspect)",
+  "packet_hex": "a702110078563412020101e8031f04020244055e06",
+  "decoded": {
+    "type": "TOUCH_FRAME",
+    "timestampUs": 305419896,
+    "contacts": [
+      {
+        "id": 1,
+        "tip": true,
+        "confidence": false,
+        "x": 1000,
+        "y": 1055
+      },
+      {
+        "id": 2,
+        "tip": false,
+        "confidence": true,
+        "x": 1348,
+        "y": 1630
+      }
+    ]
+  }
+}

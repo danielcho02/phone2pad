@@ -1,0 +1,17 @@
+{
+  "name": "resync_after_garbage",
+  "description": "Recover two valid packets surrounded by garbage incl. a decoy 0xA7",
+  "stream_hex": "deadbeefa7ff00a70308000100000040e20100001122a70501000199",
+  "expected_packets": [
+    {
+      "type": "PING",
+      "seq": 1,
+      "senderTimestampUs": 123456
+    },
+    {
+      "type": "HAPTIC",
+      "effect": 1
+    }
+  ],
+  "skipped_bytes": 11
+}

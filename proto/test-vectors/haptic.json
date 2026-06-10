@@ -1,0 +1,9 @@
+{
+  "name": "haptic",
+  "description": "HAPTIC click effect (Phase D)",
+  "packet_hex": "a705010000",
+  "decoded": {
+    "type": "HAPTIC",
+    "effect": 0
+  }
+}

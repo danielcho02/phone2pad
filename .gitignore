@@ -1,0 +1,21 @@
+# Build outputs
+pc/build/
+android/.gradle/
+android/build/
+android/*/build/
+android/local.properties
+
+# IDE
+.idea/
+.vs/
+*.user
+out/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Driver signing artifacts (never commit — see docs/06-WORKFLOW.md §2)
+*.cer
+*.pfx
+*.cat

@@ -1,0 +1,10 @@
+{
+  "name": "ping",
+  "description": "PING from PC",
+  "packet_hex": "a70308000100000040e20100",
+  "decoded": {
+    "type": "PING",
+    "seq": 1,
+    "senderTimestampUs": 123456
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "name": "touch_frame_5contacts",
+  "description": "Five simultaneous contacts (full-hand gesture)",
+  "packet_hex": "a702230050c300000500036400c80001032c0190010203f40158020303bc02200304038403e803",
+  "decoded": {
+    "type": "TOUCH_FRAME",
+    "timestampUs": 50000,
+    "contacts": [
+      {
+        "id": 0,
+        "tip": true,
+        "confidence": true,
+        "x": 100,
+        "y": 200
+      },
+      {
+        "id": 1,
+        "tip": true,
+        "confidence": true,
+        "x": 300,
+        "y": 400
+      },
+      {
+        "id": 2,
+        "tip": true,
+        "confidence": true,
+        "x": 500,
+        "y": 600
+      },
+      {
+        "id": 3,
+        "tip": true,
+        "confidence": true,
+        "x": 700,
+        "y": 800
+      },
+      {
+        "id": 4,
+        "tip": true,
+        "confidence": true,
+        "x": 900,
+        "y": 1000
+      }
+    ]
+  }
+}

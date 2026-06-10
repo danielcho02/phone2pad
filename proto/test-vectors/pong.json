@@ -1,0 +1,10 @@
+{
+  "name": "pong",
+  "description": "PONG echo from phone",
+  "packet_hex": "a70408000100000040e20100",
+  "decoded": {
+    "type": "PONG",
+    "seq": 1,
+    "senderTimestampUs": 123456
+  }
+}

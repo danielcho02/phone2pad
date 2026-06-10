@@ -1,0 +1,18 @@
+{
+  "name": "touch_frame_lift",
+  "description": "Lift frame: contact reported once with tip=0 before removal",
+  "packet_hex": "a7020b00358200000100021c02b004",
+  "decoded": {
+    "type": "TOUCH_FRAME",
+    "timestampUs": 33333,
+    "contacts": [
+      {
+        "id": 0,
+        "tip": false,
+        "confidence": true,
+        "x": 540,
+        "y": 1200
+      }
+    ]
+  }
+}

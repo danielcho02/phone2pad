@@ -1,0 +1,10 @@
+{
+  "name": "touch_frame_empty",
+  "description": "Empty frame (contactCount=0): all fingers lifted",
+  "packet_hex": "a7020500e803000000",
+  "decoded": {
+    "type": "TOUCH_FRAME",
+    "timestampUs": 1000,
+    "contacts": []
+  }
+}

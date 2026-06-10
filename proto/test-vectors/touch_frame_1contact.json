@@ -1,0 +1,18 @@
+{
+  "name": "touch_frame_1contact",
+  "description": "Single contact down",
+  "packet_hex": "a7020b001a4100000100031c02b004",
+  "decoded": {
+    "type": "TOUCH_FRAME",
+    "timestampUs": 16666,
+    "contacts": [
+      {
+        "id": 0,
+        "tip": true,
+        "confidence": true,
+        "x": 540,
+        "y": 1200
+      }
+    ]
+  }
+}

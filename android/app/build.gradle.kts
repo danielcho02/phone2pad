@@ -1,10 +1,25 @@
 // :app — the phone2pad phone-side sensor app (Phase A).
 // Black, full-screen, landscape "pad" Activity that streams raw multitouch to the
 // PC over TCP :38917. Reuses the wire protocol from :proto (no re-implementation).
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     kotlin("android")
 }
+
+// Release signing is driven by an un-committed android/keystore.properties (see
+// keystore.properties.example). When the file is absent — fresh checkout, CI — the
+// release build stays unsigned instead of failing, so assembleRelease still builds.
+// package-release.ps1 only publishes the APK/AAB when a real keystore is present.
+val keystorePropsFile = rootProject.file("keystore.properties")
+val keystoreProps = Properties().apply {
+    if (keystorePropsFile.exists()) {
+        keystorePropsFile.inputStream().use { load(it) }
+    }
+}
+val hasReleaseKeystore = keystorePropsFile.exists() &&
+    keystoreProps.getProperty("storeFile") != null
 
 android {
     namespace = "com.phone2pad"
@@ -16,13 +31,35 @@ android {
         applicationId = "com.phone2pad"
         minSdk = 28
         targetSdk = 36
-        versionCode = 1
-        versionName = "0.1-phase-a"
+        versionCode = 2
+        versionName = "0.2.0"
+    }
+
+    signingConfigs {
+        if (hasReleaseKeystore) {
+            create("release") {
+                storeFile = rootProject.file(keystoreProps.getProperty("storeFile"))
+                storePassword = keystoreProps.getProperty("storePassword")
+                keyAlias = keystoreProps.getProperty("keyAlias")
+                keyPassword = keystoreProps.getProperty("keyPassword")
+            }
+        }
     }
 
     buildTypes {
         debug {
             isMinifyEnabled = false
+        }
+        release {
+            // Keep Phase B behaviour intact: no code shrinking / resource stripping.
+            isMinifyEnabled = false
+            isShrinkResources = false
+            // Signed only when a keystore is configured; otherwise unsigned.
+            signingConfig = if (hasReleaseKeystore) {
+                signingConfigs.getByName("release")
+            } else {
+                null
+            }
         }
     }
 

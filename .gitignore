@@ -19,3 +19,11 @@ Thumbs.db
 *.cer
 *.pfx
 *.cat
+
+# Android release signing — never commit the keystore or its passwords
+android/keystore.properties
+*.jks
+*.keystore
+
+# Release packaging output
+dist/

@@ -11,18 +11,29 @@
         android:supportsRtl="false"
         android:theme="@style/Theme.phone2pad.Black">
 
-        <!-- Landscape "pad" Activity. Exported so the PC client can launch it via
-             `adb shell am start -n com.phone2pad/.BlackPadActivity`. -->
+        <!-- Launcher screen: USB setup guide + "start pad" button. Shown when the
+             user taps the app icon. -->
         <activity
-            android:name=".BlackPadActivity"
+            android:name=".MainActivity"
             android:exported="true"
-            android:screenOrientation="landscape"
-            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden">
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.phone2pad.Main">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Landscape "pad" Activity (black touchpad surface). Exported so the PC
+             client can launch it directly via
+             `adb shell am start -n com.phone2pad/.BlackPadActivity`. Reachable from
+             MainActivity's "start pad" button; no LAUNCHER category (not the icon
+             entry point). -->
+        <activity
+            android:name=".BlackPadActivity"
+            android:exported="true"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden" />
     </application>
 
 </manifest>

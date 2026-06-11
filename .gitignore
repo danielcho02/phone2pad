@@ -1,6 +1,8 @@
 # Build outputs
 pc/build/
+pc/build-release/
 android/.gradle/
+android/.kotlin/
 android/build/
 android/*/build/
 android/local.properties

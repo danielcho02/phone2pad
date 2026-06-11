@@ -82,7 +82,29 @@
 
 ---
 
-## Phase D — 폴리시 (지속)
+## Phase D — distribution + 폴리시
+
+### D-1 distribution (배포 패키징) — 진행 중
+
+현재 USB/ADB user-mode MVP(Phase A/B)를 배포 가능한 형태로 정리. Phase C(드라이버),
+Wi-Fi/Bluetooth는 범위 외.
+
+**산출물**
+- Android: `MainActivity` 런처(USB 사용법 안내 + [패드 시작]), `versionName 0.2.0`,
+  release 서명 설정(`keystore.properties` 기반, 키는 커밋 금지)
+- PC: 정적 CRT(`/MT`) 빌드로 self-contained Windows zip
+- `scripts/package-release.ps1`: Release 빌드 → zip → (키 있으면) APK/AAB → `SHA256SUMS.txt`
+- 문서: `QUICKSTART.md`, `RELEASE.md`, `CHANGELOG.md`, `PRIVACY.md`, `LICENSE`(MIT)
+
+**수락 기준**
+- [x] `scripts/test-all.ps1` 회귀 유지 (proto L1 + client L2/L3 + `:app:assembleDebug`)
+- [x] `package-release.ps1`이 self-contained zip 생성 (client는 시스템 DLL만 의존)
+- [x] keystore 없으면 Android release asset SKIP + 경고 (debug APK는 release asset 아님)
+- [x] `BlackPadActivity` 직접 기동 경로(`adb am start`) 유지, 앱 실행 시 `MainActivity` 우선
+- [ ] GitHub Release `v0.2.0` 게시 (사용자: 태그 push + `gh release create`)
+- [ ] Google Play Internal testing 업로드 (사용자: Play Console, AAB + Data safety + Privacy URL)
+
+### D-2 폴리시 (지속)
 
 - 팜 리젝션 휴리스틱 (접촉 면적 `MotionEvent.getSize` → confidence=0)
 - HAPTIC 패킷: 탭/클릭 시 폰 진동 피드백

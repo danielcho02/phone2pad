@@ -21,11 +21,27 @@
 | `docs/06-WORKFLOW.md` | 빌드, Git, 에이전트 운용 규칙 |
 | `prompts/` | Phase별 Claude Code 시작 프롬프트 |
 
-## 빠른 시작 (개발)
+## 빠른 시작 (사용자)
 
-1. 이 폴더를 Git 레포로 초기화: `git init && git add . && git commit -m "docs: bootstrap"`
-2. Claude Code 실행 후 `prompts/phase-0A-bootstrap.md` 내용을 붙여넣기
-3. Phase A 완료 후 실기기 수락 테스트 → `prompts/phase-B-gestures.md` → `phase-C-driver.md`
+릴리스로 사용하는 방법은 **[QUICKSTART.md](QUICKSTART.md)**를 보세요. 요약:
+
+1. adb(Android Platform Tools)를 설치하고 PATH에 등록한다. (zip에 포함되지 않음)
+2. GitHub Release에서 `phone2pad-windows-x64-vX.Y.Z.zip`을 받아 풀고 `phone2pad_client.exe` 실행.
+   - 정적 링크 빌드라 별도 런타임(VC++ 재배포) 설치가 필요 없다.
+3. 폰에 `phone2pad-android-vX.Y.Z.apk`를 설치하고 USB 디버깅을 허용한다.
+4. 폰 앱에서 **[패드 시작]** → 화면이 검게 변하면 트랙패드로 동작.
+
+## 빌드 (개발)
+
+```powershell
+# PC client + 테스트
+./scripts/test-all.ps1
+# 배포 패키징 (dist/ 에 zip / apk·aab / SHA256SUMS.txt 생성)
+./scripts/package-release.ps1 -Version 0.2.0
+```
+
+릴리스/서명/배포 절차는 **[RELEASE.md](RELEASE.md)**, 변경 이력은
+**[CHANGELOG.md](CHANGELOG.md)**를 참고하세요.
 
 ## 사전 준비 (사용자 수동)
 
@@ -35,4 +51,11 @@
 
 ## 상태
 
-Phase 0 시작 전 — 설계 문서 완료 단계.
+- Phase 0 / A / B 완료 (USB/ADB 기반 user-mode MVP). `main`에 `v0.2-phase-b` 태그.
+- **현재: Phase D — distribution.** GitHub Release(Windows zip + release-signed APK)와
+  Google Play Internal testing(AAB) 배포 준비. 배포 태그는 SemVer `v0.2.0`.
+- Phase C(네이티브 PTP HID 드라이버), Wi-Fi/Bluetooth는 이후 별도 작업.
+
+## 라이선스
+
+MIT License — [LICENSE](LICENSE) 참고. 개인정보 처리방침은 [PRIVACY.md](PRIVACY.md).

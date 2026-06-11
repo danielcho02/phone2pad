@@ -84,7 +84,17 @@ phone2pad/
         mouse_sink 드래그 케이스 추가, 기존 Phase A·proto 회귀 유지
       - 실기기 검증(L4) 대기: 실사용 자연스러움, 3손가락 Alt+Tab 신뢰성 튜닝,
         long-press 드래그 체감, 2손가락 우클릭 신뢰성
-- [ ] Phase C: PTP 가상 HID 드라이버 (네이티브 트랙패드 인식)
-- [ ] Phase D: 폴리시 — 팜 리젝션, 햅틱, 전력 최적화
+- [ ] Phase C: PTP 가상 HID 드라이버 (네이티브 트랙패드 인식) — 보류
+- [~] Phase D: distribution + 폴리시
+      - [~] D-1 distribution (배포 패키징): USB/ADB MVP를 배포 형태로 정리
+        - 구현 완료: MainActivity 런처(USB 안내 + [패드 시작], BlackPadActivity는
+          landscape 패드 전용 유지·adb am start 경로 보존), versionName 0.2.0 +
+          release 서명 설정(keystore.properties 기반, 키 커밋 금지), PC 정적 CRT(/MT)
+          self-contained zip, scripts/package-release.ps1(zip/APK·AAB/SHA256SUMS),
+          QUICKSTART/RELEASE/CHANGELOG/PRIVACY/LICENSE(MIT)
+        - 자동 검증: test-all.ps1 회귀 유지, package-release dry-run으로 self-contained
+          zip 생성(client는 시스템 DLL만 의존), keystore 없으면 Android asset SKIP
+        - 대기(사용자): GitHub Release v0.2.0 게시, Google Play Internal testing 업로드
+      - [ ] D-2 폴리시 — 팜 리젝션, 햅틱, 전력 최적화 (이후)
 
 작업 시작 전 이 체크리스트를 갱신하고, Phase 완료 시 체크 표시 후 커밋하라.

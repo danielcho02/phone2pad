@@ -91,22 +91,28 @@ You need:
 * Android USB debugging enabled
 * Android Platform Tools / `adb`
 
-Check that `adb` is available:
+phone2pad does not ship Google's Platform Tools. The client finds `adb`
+automatically — pick whichever is easier:
 
-```powershell
-adb version
-```
+* **Install normally:** install Android Platform Tools (or Android Studio) so `adb`
+  is on your `PATH`. Verify with `adb version`.
+* **Drop it next to the client:** download Platform Tools and unzip them into a
+  `tools\platform-tools` folder beside `phone2pad_client.exe` (so that
+  `…\tools\platform-tools\adb.exe` exists). No `PATH` setup needed.
+
+If `adb` is missing, the client prints the download link and setup steps and exits.
+`adb` is used only for the local USB link between phone and PC — nothing goes online.
 
 ### 2. Install the Android app
 
-1. Download `phone2pad-android-v0.2.1-apk.zip`.
+1. Download `phone2pad-android-v0.3.0-apk.zip`.
 2. Unzip it.
 3. Install the APK on your Android phone.
 4. Allow installation from unknown sources if Android asks.
 
 ### 3. Run the Windows client
 
-1. Download `phone2pad-windows-x64-v0.2.1.zip`.
+1. Download `phone2pad-windows-x64-v0.3.0.zip`.
 2. Unzip it.
 3. Run:
 
@@ -114,13 +120,15 @@ adb version
 phone2pad_client.exe
 ```
 
-The client waits for the Android app.
-
-You should see:
+The client reports where it found `adb`, then waits for your phone. When the phone
+is connected and authorized you should see:
 
 ```text
 Open phone2pad on your Android phone and tap Trackpad Mode Start.
 ```
+
+If something is off, the client says what to fix (no phone detected, device not
+authorized, more than one phone connected, etc.).
 
 ### 4. Start trackpad mode
 
@@ -205,7 +213,7 @@ For more details, see **[PRIVACY.md](PRIVACY.md)**.
 * [x] Windows user-mode cursor movement
 * [x] Basic multi-touch gestures
 * [x] Release packaging for Windows and Android
-* [ ] Better diagnostics for ADB/device issues
+* [x] Better diagnostics for ADB/device issues
 * [ ] Gesture tuning and UX polish
 * [ ] Wi-Fi / Bluetooth transport exploration
 * [ ] Native Windows Precision Touchpad driver research

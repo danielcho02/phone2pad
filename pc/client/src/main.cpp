@@ -13,6 +13,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <optional>
 #include <string>
 #include <thread>
 #include <vector>
@@ -64,6 +65,47 @@ void printLatency(const FrameReceiver& receiver) {
     }
     std::printf("latency: n=%zu  p50=%.2fms  p95=%.2fms  p99=%.2fms\n", s.size(),
                 percentile(s, 0.50), percentile(s, 0.95), percentile(s, 0.99));
+}
+
+// Shown when no adb.exe is found anywhere. Concise, non-technical, with the one
+// official download URL and the app-local drop-in location.
+void printAdbMissing() {
+    std::printf(
+        "Android Platform Tools (adb) were not found.\n"
+        "phone2pad uses adb only for the local USB link between your phone and PC -\n"
+        "nothing is sent online.\n\n"
+        "Fix it one of two ways:\n"
+        "  1) Install Android Platform Tools and make sure adb is on your PATH, or\n"
+        "  2) Download them and unzip into a \"tools\\platform-tools\" folder next to\n"
+        "     phone2pad_client.exe.\n\n"
+        "Download: https://developer.android.com/tools/releases/platform-tools\n");
+}
+
+// One concise, non-technical line per device-state problem.
+void printDeviceStatus(DeviceStatus status) {
+    switch (status) {
+        case DeviceStatus::None:
+            std::printf(
+                "No phone detected. Connect your phone via USB and turn on USB debugging.\n");
+            break;
+        case DeviceStatus::Unauthorized:
+            std::printf(
+                "Phone connected but not authorized. Unlock it and tap Allow on the\n"
+                "\"Allow USB debugging?\" prompt.\n");
+            break;
+        case DeviceStatus::Offline:
+            std::printf(
+                "Phone is still connecting (offline). Reconnect the USB cable if this\n"
+                "does not clear up.\n");
+            break;
+        case DeviceStatus::Multiple:
+            std::printf(
+                "More than one phone is connected. Disconnect the others and run\n"
+                "phone2pad again.\n");
+            break;
+        case DeviceStatus::Ready:
+            break;  // handled inline (forward setup)
+    }
 }
 
 }  // namespace
@@ -118,27 +160,45 @@ int main(int argc, char** argv) {
     FrameReceiver receiver(router);
     AdbManager adb(package, activity, port);
 
-    std::printf("phone2pad client: adb=%s port=%d package=%s\n", adb.adbPath().c_str(), port,
-                package.c_str());
+    std::printf("phone2pad: turning your USB-connected phone into a Windows trackpad.\n");
+    if (!adb.ready()) {
+        printAdbMissing();
+        return 1;
+    }
+    std::printf("Found adb (%s): %s\n", adb.adbSource().c_str(), adb.adbPath().c_str());
+    std::printf("Waiting for your phone (port %d)...\n", port);
 
-    std::string forwardedSerial;  // device the forward is currently set up for
-    bool hintShown = false;       // "tap Trackpad Mode Start" shown for this wait
+    std::string forwardedSerial;             // device the forward is currently set up for
+    bool hintShown = false;                  // "tap Trackpad Mode Start" shown for this wait
+    std::optional<DeviceStatus> lastStatus;  // last reported status (latched, prints once)
 
     while (!g_stop.load()) {
-        const auto device = adb.firstDevice();
-        if (!device) {
-            if (!forwardedSerial.empty()) std::printf("device disconnected; waiting...\n");
+        const DeviceQuery q = adb.queryDevices();
+        if (q.status != DeviceStatus::Ready) {
+            if (lastStatus != q.status) {
+                printDeviceStatus(q.status);
+                lastStatus = q.status;
+            }
             forwardedSerial.clear();
             hintShown = false;
             std::this_thread::sleep_for(1s);
             continue;
         }
+        lastStatus = DeviceStatus::Ready;
 
         // Set up the adb forward once per device (idempotent; no app auto-launch).
-        if (forwardedSerial != *device) {
-            std::printf("device %s: setting up adb forward tcp:%d\n", device->c_str(), port);
-            adb.setupForward(*device);
-            forwardedSerial = *device;
+        if (forwardedSerial != q.serial) {
+            std::printf("Phone detected (%s). Setting up the USB connection...\n",
+                        q.serial.c_str());
+            if (!adb.setupForward(q.serial)) {
+                std::printf(
+                    "Couldn't set up the USB connection (adb forward). Reconnect the cable\n"
+                    "and try again.\n");
+                forwardedSerial.clear();
+                std::this_thread::sleep_for(1s);
+                continue;
+            }
+            forwardedSerial = q.serial;
             hintShown = false;
         }
         if (!hintShown) {

@@ -8,10 +8,15 @@ USB-C로 연결한 Android 폰을 Windows 트랙패드처럼 사용하는 방법
 ## 1. 준비물
 
 - USB 데이터 전송이 가능한 USB-C 케이블
-- **adb (Android Platform Tools)** — phone2pad에는 포함되어 있지 않습니다.
-  - [Android SDK Platform Tools](https://developer.android.com/tools/releases/platform-tools)를
-    내려받아 `adb.exe`를 PATH에 등록하거나, Android Studio 설치본의 platform-tools를 사용하세요.
-  - 확인: PowerShell에서 `adb version` 이 동작해야 합니다.
+- **adb (Android Platform Tools)** — phone2pad에는 포함되어 있지 않습니다(구글 공식 도구라 함께 배포하지 않습니다).
+  client가 adb를 자동으로 찾으므로, 아래 둘 중 **편한 방법 하나**만 따르면 됩니다.
+  - **방법 A (일반 설치):** [Android SDK Platform Tools](https://developer.android.com/tools/releases/platform-tools)를
+    설치하거나 Android Studio의 platform-tools를 쓰면 됩니다. 보통 별도 설정 없이 자동으로 인식됩니다.
+  - **방법 B (옆에 풀기, 가장 쉬움):** 위 링크에서 platform-tools zip을 받아,
+    `phone2pad_client.exe`가 있는 폴더 안에 `tools\platform-tools` 폴더를 만들고 그 안에 압축을 풉니다.
+    (즉 `…\tools\platform-tools\adb.exe` 가 되도록.) PATH 설정이 필요 없습니다.
+  - adb를 못 찾으면 client가 실행 시 다운로드 주소와 설치 방법을 친절히 안내합니다.
+  - adb는 폰↔PC 사이의 **로컬 USB 통신**에만 쓰이며, 인터넷으로 전송되는 것은 없습니다.
 
 ## 2. 폰 설정 (최초 1회)
 
@@ -26,10 +31,12 @@ USB-C로 연결한 Android 폰을 Windows 트랙패드처럼 사용하는 방법
 1. GitHub Release의 `phone2pad-windows-x64-vX.Y.Z.zip`을 받아 압축을 풉니다.
    (별도 런타임 설치 불필요 — 정적 링크된 실행 파일입니다.)
 2. 압축을 푼 폴더에서 **`phone2pad_client.exe`**를 실행합니다.
-   - client는 adb forward를 설정하고 연결을 **대기**합니다.
+   - client는 먼저 adb를 찾고(`Found adb (...)`), 폰을 **대기**합니다.
      (폰 앱을 자동으로 켜지 않습니다.)
-   - 콘솔에 `Open phone2pad on your Android phone and tap Trackpad Mode Start.`
+   - 폰이 연결되면 USB 연결을 설정하고, 콘솔에
+     `Open phone2pad on your Android phone and tap Trackpad Mode Start.`
      안내가 보이면 정상입니다. 종료는 Ctrl+C.
+   - adb를 못 찾으면 다운로드 주소와 설치 방법을 안내하고 종료합니다(§1 참고).
 
 ## 4. 폰에서 트랙패드 모드 시작
 
@@ -49,7 +56,14 @@ USB-C로 연결한 Android 폰을 Windows 트랙패드처럼 사용하는 방법
 
 ## 6. 문제 해결
 
-- 커서가 안 움직임: `adb devices` 에 폰이 보이는지, USB 디버깅 허용을 눌렀는지 확인하세요.
+client 콘솔 메시지가 대부분의 상황을 그대로 안내합니다.
+
+- **No phone detected**: 폰이 연결되지 않았습니다. USB 케이블과 USB 디버깅을 확인하세요.
+- **not authorized**: 폰 화면 잠금을 풀고 "USB 디버깅을 허용하시겠습니까?"에서 **허용**을 누르세요.
+- **offline**: 폰이 연결 중입니다. 안 풀리면 케이블을 다시 꽂으세요.
+- **More than one phone**: 폰이 여러 대 연결돼 있습니다. 나머지를 분리하고 다시 실행하세요.
+- **adb forward 실패**: 케이블을 다시 꽂고 client를 재실행하세요.
+- 커서가 안 움직임: 폰 앱에서 **[트랙패드 모드 시작]**을 눌렀는지 확인하세요.
 - 연결이 자꾸 끊김: 케이블이 데이터 전송용인지, 허브 대신 PC 직결인지 확인하세요.
 - 케이블을 뽑으면 폰은 평소 상태로 돌아옵니다.
 

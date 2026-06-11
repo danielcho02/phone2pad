@@ -29,3 +29,11 @@ android/keystore.properties
 
 # Release packaging output
 dist/
+
+# App-local downloaded Android Platform Tools (never commit Google binaries).
+# Users may drop platform-tools next to the client; the repo has no source dir
+# named platform-tools, so these patterns can't shadow tracked sources.
+/tools/platform-tools/
+tools/platform-tools/
+/platform-tools/
+platform-tools/

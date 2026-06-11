@@ -1,66 +1,311 @@
+<div align="center">
+
 # phone2pad
 
-> USB로 연결한 Android 폰을 Windows 트랙패드로 사용하는 앱.
+### Turn your Android phone into a Windows touchpad.
 
-**⚠️ v0.2.0 — 알파 (사전 배포본).** 초기 공개 버전으로, 기능과 안정성이 계속
-바뀔 수 있습니다. 실사용 피드백을 위해 공개합니다.
+<p>
+  <a href="https://github.com/danielcho02/phone2pad/releases">
+    <img alt="GitHub release" src="https://img.shields.io/github/v/release/danielcho02/phone2pad?include_prereleases&style=for-the-badge&label=release">
+  </a>
+  <a href="https://github.com/danielcho02/phone2pad/blob/main/LICENSE">
+    <img alt="License" src="https://img.shields.io/github/license/danielcho02/phone2pad?style=for-the-badge">
+  </a>
+  <img alt="Status" src="https://img.shields.io/badge/status-alpha-orange?style=for-the-badge">
+  <img alt="Platform" src="https://img.shields.io/badge/Windows%20%2B%20Android-USB%2FADB-blue?style=for-the-badge">
+</p>
 
-phone2pad는 USB/ADB로 연결한 Android 폰을 Windows의 멀티터치 트랙패드로 바꿔 줍니다.
-앱에서 트랙패드 모드를 시작하면 폰 화면이 검게 변하고, 그때부터 폰 표면의 터치가
-PC의 커서·스크롤·제스처 입력으로 전달됩니다.
+<p>
+  <strong>phone2pad</strong> lets you use an Android phone as a touchpad for Windows through a local USB/ADB connection.
+</p>
 
-## 주요 기능
+<p>
+  <a href="#download">Download</a>
+  ·
+  <a href="#quick-start">Quick Start</a>
+  ·
+  <a href="#features">Features</a>
+  ·
+  <a href="#architecture">Architecture</a>
+  ·
+  <a href="#roadmap">Roadmap</a>
+</p>
 
-- **한 손가락** — 커서 이동, 탭(좌클릭), 길게 눌러 드래그
-- **두 손가락** — 스크롤, 탭(우클릭)
-- **세 손가락** — 앱 전환 제스처 (작업 보기 / 앱 전환 / 바탕화면 보기)
-- **네 손가락** — 가상 데스크탑 전환 제스처
-- **수동 트랙패드 모드 시작** — 앱에서 직접 모드를 켤 때만 터치가 전송됨
+</div>
 
-## 빠른 시작
+---
 
-자세한 안내는 **[QUICKSTART.md](QUICKSTART.md)** 를 참고하세요. 요약:
+> [!WARNING]
+> **v0.2.0 is an alpha / pre-release.**  
+> It works as a USB/ADB-based touchpad MVP, but the UX, protocol, and implementation may change.
 
-1. GitHub Release에서 Windows zip(`phone2pad-windows-x64-v0.2.0.zip`)을 다운로드합니다.
-2. GitHub Release에서 Android APK zip(`phone2pad-android-v0.2.0-apk.zip`)을 다운로드합니다.
-3. Android APK zip의 압축을 풀고, 안에 든 APK를 폰에 설치합니다.
-4. 폰에서 **개발자 옵션**과 **USB 디버깅**을 활성화합니다.
-5. Windows에 **Android Platform Tools(adb)** 를 설치합니다.
-6. Windows zip의 압축을 풀고 **`phone2pad_client.exe`** 를 실행합니다.
-   (client는 연결을 대기합니다.)
-7. 폰에서 phone2pad 앱을 열고 **[트랙패드 모드 시작]** 을 누릅니다.
-   화면이 검게 변하면 트랙패드로 동작합니다.
+## Preview
 
-> **참고:** GitHub 웹 업로드는 `.apk` 파일을 거부할 수 있어, APK는
-> `phone2pad-android-v0.2.0-apk.zip` 형태로 배포됩니다. zip을 풀어 안의 APK를 설치하세요.
+```text
+Android phone              USB / ADB              Windows PC
+┌────────────────┐      local forwarding       ┌─────────────────────┐
+│ phone2pad app  │ ─────────────────────────▶ │ phone2pad_client.exe │
+│ black touchpad │                            │ user-mode input      │
+└────────────────┘                            └─────────────────────┘
+```
 
-## 제한 사항
+Open the Android app, tap **Trackpad Mode Start**, and the phone becomes a black touch surface for your PC.
 
-- **USB/ADB 연결만 지원**합니다.
-- **Wi-Fi / Bluetooth는 아직 지원하지 않습니다.**
-- **네이티브 Windows Precision Touchpad 드라이버는 아직 포함되어 있지 않습니다.**
-  현재는 user-mode 입력 방식으로 동작합니다.
-- 폰에서 **USB 디버깅 활성화가 필요합니다.**
+---
 
-## 보안 및 개인정보
+## Why phone2pad?
 
-- **계정이나 로그인이 필요 없습니다.**
-- **클라우드 서버를 사용하지 않습니다.**
-- 터치 입력은 **USB/ADB 포워딩을 통해 로컬(같은 기기 ↔ 연결된 PC)로만 전송**되며,
-  외부로 전송되거나 저장되지 않습니다.
-- **비공식 출처의 APK를 내려받지 마세요.** 반드시 공식 GitHub Release만 사용하세요.
+Most “phone as mouse” apps rely on Wi-Fi, pairing flows, accounts, or background services.
 
-자세한 내용은 **[PRIVACY.md](PRIVACY.md)** 를 참고하세요.
+phone2pad starts from a simpler idea:
 
-## 문서
+- plug in your phone
+- run a tiny Windows client
+- start trackpad mode manually
+- send touch input locally over USB/ADB
 
-| 문서 | 내용 |
+No account. No cloud server. No remote backend.
+
+---
+
+## Features
+
+| Input | Action |
 |---|---|
-| [QUICKSTART.md](QUICKSTART.md) | 설치 및 사용 빠른 시작 |
-| [RELEASE.md](RELEASE.md) | 빌드 · 배포 절차 |
-| [PRIVACY.md](PRIVACY.md) | 개인정보 처리방침 |
-| [CHANGELOG.md](CHANGELOG.md) | 버전별 변경 이력 |
+| One-finger move | Move cursor |
+| One-finger tap | Left click |
+| One-finger long press | Drag |
+| Two-finger scroll | Scroll vertically / horizontally |
+| Two-finger tap | Right click |
+| Two-finger pinch | Zoom |
+| Three-finger gestures | Task View, app switching, show desktop |
+| Four-finger gestures | Virtual desktop switching |
 
-## 라이선스
+---
 
-MIT License — [LICENSE](LICENSE) 참고.
+## Download
+
+Get the latest release here:
+
+<div align="center">
+
+### [Download from GitHub Releases](https://github.com/danielcho02/phone2pad/releases)
+
+</div>
+
+For **v0.2.0 alpha**, use these assets:
+
+| File | Use |
+|---|---|
+| `phone2pad-windows-x64-v0.2.0.zip` | Windows client |
+| `phone2pad-android-v0.2.0-apk.zip` | Android APK packaged as a zip |
+| `SHA256SUMS.txt` | Checksums for release assets |
+
+> [!NOTE]
+> GitHub web uploads may reject raw `.apk` files.  
+> Download `phone2pad-android-v0.2.0-apk.zip`, unzip it, then install the APK inside.
+
+---
+
+## Quick Start
+
+For a more detailed guide, see [`QUICKSTART.md`](QUICKSTART.md).
+
+### 1. Install prerequisites
+
+You need:
+
+- Windows 10/11 x64
+- Android 9 or later
+- USB data cable
+- Android USB debugging enabled
+- Android Platform Tools / `adb`
+
+Check ADB:
+
+```powershell
+adb version
+```
+
+### 2. Install the Android app
+
+1. Download `phone2pad-android-v0.2.0-apk.zip`.
+2. Unzip it.
+3. Install the APK on your Android phone.
+4. Allow “Install unknown apps” if Android asks.
+
+### 3. Run the Windows client
+
+1. Download `phone2pad-windows-x64-v0.2.0.zip`.
+2. Unzip it.
+3. Run:
+
+```powershell
+phone2pad_client.exe
+```
+
+The client waits for the Android app:
+
+```text
+Open phone2pad on your Android phone and tap Trackpad Mode Start.
+```
+
+### 4. Start trackpad mode
+
+1. Connect the phone to the PC with USB.
+2. Accept the USB debugging prompt.
+3. Open the phone2pad app.
+4. Tap **Trackpad Mode Start**.
+5. When the phone screen turns black, use it as a touchpad.
+
+---
+
+## Architecture
+
+```text
+┌─────────────────────────────────────────────────────────────────┐
+│ Android                                                         │
+│                                                                 │
+│  MainActivity                                                   │
+│      └─ user opens app and taps "Trackpad Mode Start"            │
+│                                                                 │
+│  BlackPadActivity                                               │
+│      └─ captures touch input from the full-screen black surface  │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              │ Touch frames
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│ USB / ADB forwarding                                             │
+│                                                                 │
+│  local transport between the connected phone and Windows PC       │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│ Windows                                                         │
+│                                                                 │
+│  phone2pad_client.exe                                            │
+│      ├─ receives touch frames                                    │
+│      ├─ maps gestures                                            │
+│      └─ injects user-mode mouse / gesture input                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+Current release uses **user-mode input**.  
+Native Windows Precision Touchpad driver support is planned for a later phase.
+
+---
+
+## Tech Stack
+
+| Layer | Stack |
+|---|---|
+| Android app | Kotlin, Android SDK |
+| Windows client | C++, Win32 |
+| Protocol | Custom binary touch-frame protocol |
+| Transport | USB / ADB forwarding |
+| Build | Gradle, CMake, MSBuild |
+| Release packaging | PowerShell |
+| License | MIT |
+
+---
+
+## Current Limitations
+
+phone2pad is still early.
+
+- USB/ADB only
+- Wi-Fi and Bluetooth are not supported yet
+- Native Windows Precision Touchpad driver is not included yet
+- Android USB debugging is required
+- Gesture behavior may differ from a real laptop touchpad
+- The Android APK is distributed as a zip file in GitHub Releases
+
+---
+
+## Security and Privacy
+
+phone2pad is designed to stay local.
+
+- No account required
+- No cloud server
+- No analytics
+- No remote backend
+- Touch input is sent over local USB/ADB forwarding
+- Touch data is not uploaded or stored by phone2pad
+
+Only download APKs from the official GitHub Releases page.
+
+See [`PRIVACY.md`](PRIVACY.md) for details.
+
+---
+
+## Roadmap
+
+- [x] USB/ADB touch streaming
+- [x] Windows user-mode cursor movement
+- [x] Basic multi-touch gestures
+- [x] Release packaging for Windows and Android
+- [ ] Better diagnostics for ADB/device issues
+- [ ] Gesture tuning and UX polish
+- [ ] Wi-Fi / Bluetooth transport exploration
+- [ ] Native Windows Precision Touchpad driver research
+- [ ] Installer / setup experience improvements
+
+---
+
+## Documentation
+
+| Document | Description |
+|---|---|
+| [`QUICKSTART.md`](QUICKSTART.md) | End-user setup guide |
+| [`RELEASE.md`](RELEASE.md) | Release and packaging notes |
+| [`PRIVACY.md`](PRIVACY.md) | Privacy policy |
+| [`CHANGELOG.md`](CHANGELOG.md) | Version history |
+| [`LICENSE`](LICENSE) | MIT License |
+
+---
+
+## Build From Source
+
+This project currently targets Windows + Android development environments.
+
+High-level requirements:
+
+- Windows 10/11
+- Android Studio or Android SDK
+- Android Platform Tools
+- JDK compatible with the Android Gradle Plugin
+- CMake
+- MSBuild / Visual Studio Build Tools
+
+For release packaging details, see [`RELEASE.md`](RELEASE.md).
+
+---
+
+## Contributing
+
+Issues, bug reports, and testing feedback are welcome.
+
+When reporting a problem, please include:
+
+- Windows version
+- Android device model
+- Android version
+- USB cable / hub setup
+- What you expected to happen
+- What actually happened
+- Windows client console output, if available
+
+---
+
+## License
+
+phone2pad is released under the [MIT License](LICENSE).
+
+<div align="center">
+
+Made for people who have a phone, a cable, and no touchpad.
+
+</div>

@@ -77,9 +77,9 @@ TEST_CASE("replay three_finger_swipe_up: Win+Tab, no scroll") {
     CHECK_EQ(g.wheelEvents(), 0);
 }
 
-TEST_CASE("replay four_finger_swipe_left: Ctrl+Win+Left despite 3->4 landing skew") {
+TEST_CASE("replay four_finger_swipe_left: Ctrl+Win+Right despite 3->4 landing skew") {
     const MockInjector g = replayGesture("four_finger_swipe_left.pptrace");
-    CHECK_EQ(g.keyDowns, (std::vector<int>{0x11, 0x5B, 0x25}));
+    CHECK_EQ(g.keyDowns, (std::vector<int>{0x11, 0x5B, 0x27}));  // left swipe -> right (next) desktop
     CHECK(g.keyDowns.size() == 3);  // no extra 3-finger Alt(0x12) misfire
 }
 

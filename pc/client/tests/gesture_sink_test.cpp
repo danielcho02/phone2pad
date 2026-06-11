@@ -232,7 +232,7 @@ TEST_CASE("three-finger left uses Shift+Tab; Shift balanced; Alt released on lif
     CHECK_EQ(inj.wheelEvents(), 0);
 }
 
-TEST_CASE("four-finger swipe right = Ctrl+Win+Right (next virtual desktop)") {
+TEST_CASE("four-finger swipe right = Ctrl+Win+Left (previous virtual desktop)") {
     MockInjector inj;
     GestureSink s(inj);
     feed(s, {
@@ -242,7 +242,7 @@ TEST_CASE("four-finger swipe right = Ctrl+Win+Right (next virtual desktop)") {
         frame(200000, {ct(0, true, 220, 300), ct(1, true, 270, 300), ct(2, true, 320, 300), ct(3, true, 370, 300)}),
         frame(250000, {ct(0, false, 220, 300), ct(1, false, 270, 300), ct(2, false, 320, 300), ct(3, false, 370, 300)}),
     });
-    CHECK_EQ(inj.keyDowns, (std::vector<int>{VK_CTRL_, VK_LWIN_, VK_RIGHT_}));
+    CHECK_EQ(inj.keyDowns, (std::vector<int>{VK_CTRL_, VK_LWIN_, VK_LEFT_}));
 }
 
 TEST_CASE("swipe fires exactly once per session (no re-trigger)") {
@@ -318,7 +318,7 @@ TEST_CASE("settle window: 3-then-4 landing skew is a 4-finger desktop switch") {
         frame(200000, {ct(0, true, 310, 300), ct(1, true, 360, 300), ct(2, true, 410, 300), ct(3, true, 460, 300)}),  // commit left
         frame(250000, {ct(0, false, 310, 300), ct(1, false, 360, 300), ct(2, false, 410, 300), ct(3, false, 460, 300)}),
     });
-    CHECK_EQ(inj.keyDowns, (std::vector<int>{VK_CTRL_, VK_LWIN_, VK_LEFT_}));  // 4-finger
+    CHECK_EQ(inj.keyDowns, (std::vector<int>{VK_CTRL_, VK_LWIN_, VK_RIGHT_}));  // 4-finger (left swipe -> right desktop)
     // Negative: no 3-finger gesture misfired (no Alt held, no Win+Tab opener).
     CHECK_EQ(countVk(inj.events, "key_down ", VK_ALT_), 0);
 }
@@ -335,6 +335,6 @@ TEST_CASE("4->3 decay tail after a four-finger commit fires no 3-finger gesture"
         frame(200000, {ct(0, true, 360, 300), ct(1, true, 410, 300), ct(2, true, 460, 300)}),
         frame(250000, {ct(0, false, 360, 300), ct(1, false, 410, 300), ct(2, false, 460, 300)}),
     });
-    CHECK_EQ(inj.keyDowns, (std::vector<int>{VK_CTRL_, VK_LWIN_, VK_RIGHT_}));  // exactly one switch
+    CHECK_EQ(inj.keyDowns, (std::vector<int>{VK_CTRL_, VK_LWIN_, VK_LEFT_}));  // exactly one switch (right swipe -> left desktop)
     CHECK_EQ(countVk(inj.events, "key_down ", VK_ALT_), 0);  // no 3-finger Alt+Tab
 }

@@ -23,7 +23,7 @@
 
 Run the Windows client, open the Android app, tap **Trackpad Mode Start**, and your phone becomes a black touch surface for your PC.
 
-> **v0.2.0 alpha / pre-release**
+> **v0.2.1 alpha / pre-release**
 > This is an early public release. It is usable for testing and feedback, but features, UX, and implementation details may change.
 
 ---
@@ -64,16 +64,16 @@ Download the latest alpha release from:
 
 **[GitHub Releases](https://github.com/danielcho02/phone2pad/releases)**
 
-For **v0.2.0 alpha**, use these files:
+For **v0.2.1 alpha**, use these files:
 
 | File                               | Description                   |
 | ---------------------------------- | ----------------------------- |
-| `phone2pad-windows-x64-v0.2.0.zip` | Windows x64 client            |
-| `phone2pad-android-v0.2.0-apk.zip` | Android APK packaged as a zip |
+| `phone2pad-windows-x64-v0.2.1.zip` | Windows x64 client            |
+| `phone2pad-android-v0.2.1-apk.zip` | Android APK packaged as a zip |
 | `SHA256SUMS.txt`                   | SHA256 checksums              |
 
 > GitHub web uploads may reject raw `.apk` files.
-> Download `phone2pad-android-v0.2.0-apk.zip`, unzip it, then install the APK inside.
+> Download `phone2pad-android-v0.2.1-apk.zip`, unzip it, then install the APK inside.
 
 ---
 
@@ -99,14 +99,14 @@ adb version
 
 ### 2. Install the Android app
 
-1. Download `phone2pad-android-v0.2.0-apk.zip`.
+1. Download `phone2pad-android-v0.2.1-apk.zip`.
 2. Unzip it.
 3. Install the APK on your Android phone.
 4. Allow installation from unknown sources if Android asks.
 
 ### 3. Run the Windows client
 
-1. Download `phone2pad-windows-x64-v0.2.0.zip`.
+1. Download `phone2pad-windows-x64-v0.2.1.zip`.
 2. Unzip it.
 3. Run:
 

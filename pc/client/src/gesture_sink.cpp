@@ -239,7 +239,7 @@ void GestureSink::handleFour(double cx, double cy) {
     committed_ = true;
     mode_ = Mode::Swipe4;
     if (std::abs(dxs) >= std::abs(dys)) {
-        inj_.keyCombo({vk::CTRL, vk::LWIN, dxs > 0 ? vk::RIGHT : vk::LEFT});
+        inj_.keyCombo({vk::CTRL, vk::LWIN, dxs > 0 ? vk::LEFT : vk::RIGHT});
     } else if (cfg_.fourFingerVerticalMirror) {
         if (dys < 0)
             inj_.keyCombo({vk::LWIN, vk::TAB});

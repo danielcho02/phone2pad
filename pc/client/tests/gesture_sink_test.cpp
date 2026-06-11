@@ -55,7 +55,7 @@ int countVk(const std::vector<std::string>& events, const std::string& prefix, i
 
 }  // namespace
 
-TEST_CASE("two-finger scroll up emits positive vertical wheel, nothing else") {
+TEST_CASE("two-finger scroll up emits negative vertical wheel, nothing else") {
     MockInjector inj;
     GestureSink s(inj);
     feed(s, {
@@ -66,7 +66,7 @@ TEST_CASE("two-finger scroll up emits positive vertical wheel, nothing else") {
         frame(250000, {ct(0, true, 200, 120), ct(1, true, 400, 120)}),
         frame(300000, {ct(0, false, 200, 120), ct(1, false, 400, 120)}),
     });
-    CHECK(inj.wheelSum > 0);          // natural: finger up -> content up
+    CHECK(inj.wheelSum < 0);          // natural: finger up -> content up -> show lower content
     CHECK_EQ(inj.hwheelSum, 0L);
     CHECK_EQ(inj.rightClicks(), 0);   // a scroll is never a tap
     CHECK(inj.keyDowns.empty());      // a 2-finger scroll fires no swipe
@@ -83,7 +83,7 @@ TEST_CASE("two-finger scroll right emits horizontal wheel only") {
         frame(250000, {ct(0, true, 300, 300), ct(1, true, 500, 300)}),
         frame(300000, {ct(0, false, 300, 300), ct(1, false, 500, 300)}),
     });
-    CHECK(inj.hwheelSum > 0);
+    CHECK(inj.hwheelSum < 0);         // natural: finger right -> content right -> show left content
     CHECK_EQ(inj.wheelSum, 0L);
     CHECK_EQ(inj.rightClicks(), 0);
 }

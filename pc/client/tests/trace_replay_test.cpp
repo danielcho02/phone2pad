@@ -6,6 +6,7 @@
 #include "phone2pad/client/gesture_router.hpp"
 #include "phone2pad/client/gesture_sink.hpp"
 #include "phone2pad/client/mouse_sink.hpp"
+#include "phone2pad/client/orientation_normalizer.hpp"
 #include "phone2pad/client/replay.hpp"
 #include "phone2pad/client/trace.hpp"
 #include "test_main.hpp"
@@ -53,7 +54,7 @@ TEST_CASE("replay one_finger_tap: two clicks, no move") {
 
 TEST_CASE("replay two_finger_scroll_v: vertical wheel, no swipe/right-click") {
     const MockInjector g = replayGesture("two_finger_scroll_v.pptrace");
-    CHECK(g.wheelSum > 0);
+    CHECK(g.wheelSum < 0);  // swipe up -> show lower content (natural, content follows fingers)
     CHECK_EQ(g.hwheelSum, 0L);
     CHECK_EQ(g.rightClicks(), 0);
     CHECK(g.keyDowns.empty());
@@ -61,8 +62,27 @@ TEST_CASE("replay two_finger_scroll_v: vertical wheel, no swipe/right-click") {
 
 TEST_CASE("replay two_finger_scroll_h: horizontal wheel only") {
     const MockInjector g = replayGesture("two_finger_scroll_h.pptrace");
-    CHECK(g.hwheelSum > 0);
+    CHECK(g.hwheelSum < 0);  // swipe right -> show left content (natural, content follows fingers)
     CHECK_EQ(g.wheelSum, 0L);
+}
+
+TEST_CASE("replay reverse-landscape scroll normalizes to canonical direction") {
+    // The reverse fixture is the same physical swipe-up as two_finger_scroll_v but captured
+    // with the USB port on the left (ROTATION_270). Fed through the orientation normalizer
+    // (rotation=3, 2400x1080), it must scroll the same way as the canonical swipe: negative
+    // wheel. Proves end-to-end (trace -> normalize -> router -> gesture) orientation stability.
+    const std::vector<TimedFrame> frames =
+        readTrace(fixture("two_finger_scroll_v_reverse.pptrace"));
+    MockInjector mouseInj, gestInj;
+    MouseSink mouse(mouseInj);
+    GestureSink gesture(gestInj);
+    GestureRouter router(mouse, gesture);
+    OrientationNormalizingSink norm(router);
+    norm.setOrientation(/*rotation=*/3, 2400, 1080);
+    replayFrames(frames, norm, 0.0, nullptr);
+    CHECK(gestInj.wheelSum < 0);   // same direction as the canonical two_finger_scroll_v
+    CHECK_EQ(gestInj.hwheelSum, 0L);
+    CHECK_EQ(gestInj.rightClicks(), 0);
 }
 
 TEST_CASE("replay two_finger_tap: one right click, no wheel") {

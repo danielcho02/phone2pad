@@ -8,6 +8,7 @@ add_library(client_core STATIC
     src/mouse_sink.cpp
     src/gesture_sink.cpp
     src/gesture_router.cpp
+    src/orientation_normalizer.cpp
     src/adb_manager.cpp
     src/net_client.cpp
     src/trace.cpp

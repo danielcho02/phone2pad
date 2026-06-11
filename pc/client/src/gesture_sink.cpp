@@ -164,10 +164,14 @@ void GestureSink::handleTwo(double cx, double cy, double dist, int activeCount) 
 
 void GestureSink::emitScroll(double dCx, double dCy) {
     const int ppn = std::max(1, cfg_.scrollPixelsPerNotch);
-    // Vertical: finger up (screen y decreasing) scrolls content up (wheel +) when
-    // natural. Horizontal: finger right scrolls content right (hwheel +) when natural.
-    accumY_ += cfg_.naturalScroll ? -dCy : dCy;
-    accumX_ += cfg_.naturalScroll ? dCx : -dCx;
+    // Natural scroll = content follows the fingers (Apple-style). In Win32, wheel(+)
+    // scrolls up (shows upper content) and hwheel(+) scrolls right (shows right content).
+    //   finger up    (dCy<0): content moves up   -> show lower content -> wheel(-)
+    //   finger right (dCx>0): content moves right -> show left content -> hwheel(-)
+    // So natural vertical tracks dCy and natural horizontal opposes dCx;
+    // --scroll-traditional (naturalScroll=false) inverts both.
+    accumY_ += cfg_.naturalScroll ? dCy : -dCy;
+    accumX_ += cfg_.naturalScroll ? -dCx : dCx;
     while (accumY_ >= ppn) {
         inj_.wheel(+kWheelDelta);
         accumY_ -= ppn;

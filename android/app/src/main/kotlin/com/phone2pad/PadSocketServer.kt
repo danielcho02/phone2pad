@@ -36,9 +36,20 @@ class PadSocketServer(private val port: Int = DEFAULT_PORT) {
         acceptThread = Thread(::acceptLoop, "pad-accept").apply { isDaemon = true; start() }
     }
 
-    /** Update HELLO (e.g. on rotation — rare while orientation is locked landscape). */
+    /** Update the stored HELLO without transmitting (used as the seed for new connections). */
     fun updateHello(updated: Hello) {
         hello = updated
+    }
+
+    /**
+     * Push a fresh HELLO to the connected client (e.g. on a landscape<->reverse-landscape
+     * rotation; docs/02 §3). Stores it as the seed too, and enqueues it for the current
+     * connection so the PC re-reads the new rotation mid-session. No-op send if nobody is
+     * connected (the stored value still seeds the next connection).
+     */
+    fun sendHello(updated: Hello) {
+        hello = updated
+        outQueue?.offer(PacketEncoder.encode(updated))
     }
 
     /** Enqueue a touch frame for the connected client. No-op if nobody is connected. */

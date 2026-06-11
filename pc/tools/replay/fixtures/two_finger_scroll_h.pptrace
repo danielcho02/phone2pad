@@ -1,6 +1,7 @@
 # Two fingers held briefly, then moved straight right together (x increasing),
 # constant spacing so distance is unchanged (not a pinch). Initial hold spans the
-# settle window. GestureSink -> horizontal wheel (hwheel), natural = positive.
+# settle window. GestureSink -> horizontal wheel (hwheel). Natural (content follows
+# fingers): finger right moves content right -> show left content -> negative hwheel.
 {"t": 0,      "contacts": [{"id":0,"tip":1,"x":100,"y":300}, {"id":1,"tip":1,"x":300,"y":300}]}
 {"t": 100000, "contacts": [{"id":0,"tip":1,"x":100,"y":300}, {"id":1,"tip":1,"x":300,"y":300}]}
 {"t": 150000, "contacts": [{"id":0,"tip":1,"x":160,"y":300}, {"id":1,"tip":1,"x":360,"y":300}]}

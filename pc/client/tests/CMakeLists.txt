@@ -7,6 +7,7 @@ add_executable(client_tests
     gesture_router_test.cpp
     frame_receiver_test.cpp
     trace_replay_test.cpp
+    orientation_test.cpp
     adb_manager_test.cpp
 )
 

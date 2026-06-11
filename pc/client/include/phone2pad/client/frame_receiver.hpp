@@ -24,8 +24,13 @@ public:
     explicit FrameReceiver(Sink& sink, MicroClock clock = {});
 
     // Feed received bytes; dispatches each complete packet:
-    //   TouchFrame -> sink.onFrame, Pong -> RTT sample, Hello -> stored.
+    //   TouchFrame -> sink.onFrame, Pong -> RTT sample, Hello -> stored + handler.
     void processBytes(std::span<const std::uint8_t> data);
+
+    // Invoked for every decoded HELLO (initial + rotation re-sends, docs/02 §3). Used to
+    // push the phone's display rotation/dims into the orientation normalizer.
+    using HelloHandler = std::function<void(const proto::Hello&)>;
+    void setHelloHandler(HelloHandler handler) { onHello_ = std::move(handler); }
 
     // Emit one all-lift frame to the sink (call on disconnect; docs/01 §5).
     void emitLift();
@@ -40,6 +45,7 @@ public:
 private:
     Sink& sink_;
     MicroClock clock_;
+    HelloHandler onHello_;
     proto::StreamDecoder decoder_;
     std::optional<proto::Hello> hello_;
     std::uint32_t pingSeq_ = 0;

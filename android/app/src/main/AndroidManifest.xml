@@ -32,7 +32,7 @@
         <activity
             android:name=".BlackPadActivity"
             android:exported="true"
-            android:screenOrientation="landscape"
+            android:screenOrientation="sensorLandscape"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden" />
     </application>
 

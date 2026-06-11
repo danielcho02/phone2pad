@@ -27,6 +27,7 @@ void FrameReceiver::processBytes(std::span<const std::uint8_t> data) {
             sink_.onFrame(*frame);
         } else if (auto* hello = std::get_if<proto::Hello>(&pkt)) {
             hello_ = *hello;
+            if (onHello_) onHello_(*hello);
         } else if (auto* pong = std::get_if<proto::PongPacket>(&pkt)) {
             const std::uint32_t rttUs = clock_() - pong->value.senderTimestampUs;
             rttMs_.push_back(static_cast<double>(rttUs) / 1000.0);

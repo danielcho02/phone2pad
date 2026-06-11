@@ -1,0 +1,14 @@
+# Same physical two-finger swipe-up as two_finger_scroll_v.pptrace, but captured in the
+# reverse landscape (USB on the left, ROTATION_270). Every coord is the canonical fixture
+# rotated 180° for a 2400x1080 frame (x -> 2399-x, y -> 1079-y), so in the device frame
+# the motion reads as y increasing (a "down" swipe). Replayed through
+# OrientationNormalizingSink(rotation=3, w=2400, h=1080) it normalizes back to the
+# canonical swipe-up and must produce the same negative wheel. Proves cross-orientation
+# consistency end-to-end (L3).
+{"t": 0,      "contacts": [{"id":0,"tip":1,"x":2199,"y":779},  {"id":1,"tip":1,"x":1999,"y":779}]}
+{"t": 100000, "contacts": [{"id":0,"tip":1,"x":2199,"y":779},  {"id":1,"tip":1,"x":1999,"y":779}]}
+{"t": 150000, "contacts": [{"id":0,"tip":1,"x":2199,"y":839},  {"id":1,"tip":1,"x":1999,"y":839}]}
+{"t": 200000, "contacts": [{"id":0,"tip":1,"x":2199,"y":899},  {"id":1,"tip":1,"x":1999,"y":899}]}
+{"t": 250000, "contacts": [{"id":0,"tip":1,"x":2199,"y":959},  {"id":1,"tip":1,"x":1999,"y":959}]}
+{"t": 300000, "contacts": [{"id":0,"tip":1,"x":2199,"y":1019}, {"id":1,"tip":1,"x":1999,"y":1019}]}
+{"t": 350000, "contacts": [{"id":0,"tip":0,"x":2199,"y":1019}, {"id":1,"tip":0,"x":1999,"y":1019}]}

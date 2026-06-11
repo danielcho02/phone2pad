@@ -6,8 +6,10 @@
 package com.phone2pad
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.pm.ActivityInfo
 import android.graphics.Color
+import android.hardware.display.DisplayManager
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.MotionEvent
@@ -23,12 +25,33 @@ class BlackPadActivity : android.app.Activity() {
 
     private val server = PadSocketServer()
 
-    @SuppressLint("SourceLockedOrientationActivity")
+    // Last display rotation we reported to the PC; used to re-send HELLO only on change.
+    private var lastRotation = -1
+
+    // Fires on any display change. A landscape<->reverse-landscape (90<->270) flip keeps
+    // the same Configuration, so onConfigurationChanged is unreliable for it; the display
+    // listener is. On a rotation change we push a fresh HELLO so the PC re-normalizes
+    // coordinates to the canonical frame (docs/02 §3).
+    private val displayListener = object : DisplayManager.DisplayListener {
+        override fun onDisplayAdded(displayId: Int) {}
+        override fun onDisplayRemoved(displayId: Int) {}
+        override fun onDisplayChanged(displayId: Int) {
+            @Suppress("DEPRECATION")
+            val rotation = windowManager.defaultDisplay.rotation
+            if (rotation != lastRotation) {
+                lastRotation = rotation
+                server.sendHello(buildHello())
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Landscape lock (also set in the manifest); belt-and-suspenders.
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        // Allow both landscapes so a 180° flip is reported (sensorLandscape in the manifest
+        // too). Coordinate normalization to the canonical frame is done PC-side from the
+        // rotation reported in HELLO.
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
 
         // Keep the panel awake; backlight driven to 0 so no pixels are shown.
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -52,11 +75,17 @@ class BlackPadActivity : android.app.Activity() {
 
     override fun onResume() {
         super.onResume()
+        @Suppress("DEPRECATION")
+        lastRotation = windowManager.defaultDisplay.rotation
         server.start(buildHello())
+        val dm = getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
+        dm.registerDisplayListener(displayListener, null)
     }
 
     override fun onPause() {
         super.onPause()
+        val dm = getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
+        dm.unregisterDisplayListener(displayListener)
         server.stop()
     }
 

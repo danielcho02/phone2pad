@@ -24,6 +24,7 @@
 #include "phone2pad/client/gesture_sink.hpp"
 #include "phone2pad/client/mouse_sink.hpp"
 #include "phone2pad/client/net_client.hpp"
+#include "phone2pad/client/orientation_normalizer.hpp"
 #include "phone2pad/client/win32_input_injector.hpp"
 
 #ifdef _WIN32
@@ -157,7 +158,14 @@ int main(int argc, char** argv) {
     MouseSink mouse(injector, cfg);
     GestureSink gesture(injector, gcfg);
     GestureRouter router(mouse, gesture);  // 1 finger -> mouse, 2+ -> gestures
-    FrameReceiver receiver(router);
+    // Normalize the two landscape orientations onto the canonical frame (USB on the right)
+    // before any sink sees the frame, so the same physical gesture is consistent after a
+    // 180° flip. Rotation/dims come from HELLO (re-sent on rotation).
+    OrientationNormalizingSink normalizer(router);
+    FrameReceiver receiver(normalizer);
+    receiver.setHelloHandler([&normalizer](const phone2pad::proto::Hello& h) {
+        normalizer.setOrientation(h.rotation, h.screenWidthPx, h.screenHeightPx);
+    });
     AdbManager adb(package, activity, port);
 
     std::printf("phone2pad: turning your USB-connected phone into a Windows trackpad.\n");

@@ -1,7 +1,8 @@
 # Two fingers (ids 0,1) held briefly, then moved straight up together (y decreasing),
 # constant spacing so distance is unchanged (not a pinch). The initial hold spans the
 # multi-touch settle window (~90ms) so the motion after it is the real scroll.
-# GestureSink -> vertical wheel, natural = content up = positive. L2/L3 scroll tests.
+# GestureSink -> vertical wheel. Natural (content follows fingers): finger up moves
+# content up -> show lower content -> negative wheel. L2/L3 scroll tests.
 {"t": 0,      "contacts": [{"id":0,"tip":1,"x":200,"y":300}, {"id":1,"tip":1,"x":400,"y":300}]}
 {"t": 100000, "contacts": [{"id":0,"tip":1,"x":200,"y":300}, {"id":1,"tip":1,"x":400,"y":300}]}
 {"t": 150000, "contacts": [{"id":0,"tip":1,"x":200,"y":240}, {"id":1,"tip":1,"x":400,"y":240}]}

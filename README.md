@@ -23,13 +23,14 @@
 
 ## 빠른 시작 (사용자)
 
-릴리스로 사용하는 방법은 **[QUICKSTART.md](QUICKSTART.md)**를 보세요. 요약:
+릴리스로 사용하는 방법은 **[QUICKSTART.md](QUICKSTART.md)**를 보세요. 요약(PC 먼저, 폰 나중):
 
 1. adb(Android Platform Tools)를 설치하고 PATH에 등록한다. (zip에 포함되지 않음)
 2. GitHub Release에서 `phone2pad-windows-x64-vX.Y.Z.zip`을 받아 풀고 `phone2pad_client.exe` 실행.
    - 정적 링크 빌드라 별도 런타임(VC++ 재배포) 설치가 필요 없다.
+   - client는 adb forward만 설정하고 연결을 대기한다. (폰 앱을 자동 실행하지 않음)
 3. 폰에 `phone2pad-android-vX.Y.Z.apk`를 설치하고 USB 디버깅을 허용한다.
-4. 폰 앱에서 **[패드 시작]** → 화면이 검게 변하면 트랙패드로 동작.
+4. 폰에서 phone2pad 앱을 열고 **[트랙패드 모드 시작]**을 누른다 → 화면이 검게 변하면 트랙패드로 동작.
 
 ## 빌드 (개발)
 

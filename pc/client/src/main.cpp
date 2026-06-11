@@ -1,6 +1,12 @@
-// phone2pad_client (Phase A): poll adb for a device, set up the port forward,
-// launch the phone app, then stream touch frames into MouseSink (relative mouse +
-// tap). On disconnect it re-polls. `--latency-report` prints PING RTT percentiles.
+// phone2pad_client: poll adb for a device, set up the port forward, then wait for
+// the user to start trackpad mode on the phone and stream touch frames into the
+// sinks (relative mouse + gestures). On disconnect it re-polls.
+// `--latency-report` prints PING RTT percentiles.
+//
+// The client does NOT auto-launch the phone app. The official v0.2.0 flow is
+// manual: run this client, then on the phone open phone2pad and tap
+// "Trackpad Mode Start" (BlackPadActivity). Developers can still launch the pad
+// manually with `adb shell am start -n com.phone2pad/.BlackPadActivity`.
 #include <algorithm>
 #include <atomic>
 #include <chrono>
@@ -99,6 +105,9 @@ int main(int argc, char** argv) {
 #ifdef _WIN32
     SetConsoleCtrlHandler(ctrlHandler, TRUE);
 #endif
+    // Unbuffered stdout so the waiting/status lines show up promptly, including when
+    // the output is piped or logged (block-buffered by default in that case).
+    std::setvbuf(stdout, nullptr, _IONBF, 0);
 
     Win32InputInjector injector;
     MouseSinkConfig cfg;
@@ -112,20 +121,44 @@ int main(int argc, char** argv) {
     std::printf("phone2pad client: adb=%s port=%d package=%s\n", adb.adbPath().c_str(), port,
                 package.c_str());
 
+    std::string forwardedSerial;  // device the forward is currently set up for
+    bool hintShown = false;       // "tap Trackpad Mode Start" shown for this wait
+
     while (!g_stop.load()) {
         const auto device = adb.firstDevice();
         if (!device) {
+            if (!forwardedSerial.empty()) std::printf("device disconnected; waiting...\n");
+            forwardedSerial.clear();
+            hintShown = false;
             std::this_thread::sleep_for(1s);
             continue;
         }
-        std::printf("device %s: forwarding + launching app\n", device->c_str());
-        adb.setupForward(*device);
-        adb.launchApp(*device);
-        std::this_thread::sleep_for(500ms);  // let the phone bind its server
 
-        const bool connected = runClientConnection(receiver, port, g_stop);
-        if (!connected) std::this_thread::sleep_for(1s);
-        if (latencyReport) printLatency(receiver);
+        // Set up the adb forward once per device (idempotent; no app auto-launch).
+        if (forwardedSerial != *device) {
+            std::printf("device %s: setting up adb forward tcp:%d\n", device->c_str(), port);
+            adb.setupForward(*device);
+            forwardedSerial = *device;
+            hintShown = false;
+        }
+        if (!hintShown) {
+            std::printf("Open phone2pad on your Android phone and tap Trackpad Mode Start.\n");
+            hintShown = true;
+        }
+
+        // Try to connect and pump frames. With adb forward, connect() succeeds even
+        // before the user taps Trackpad Mode Start (the forward accepts then closes
+        // with no data); `gotData` tells a real session from that idle case, so we
+        // poll quietly instead of spamming the hint / empty latency reports.
+        bool gotData = false;
+        runClientConnection(receiver, port, g_stop, 1000, &gotData);
+        if (gotData) {
+            std::printf("disconnected; waiting for reconnect...\n");
+            if (latencyReport) printLatency(receiver);
+            hintShown = false;  // re-show the hint while waiting to reconnect
+        } else {
+            std::this_thread::sleep_for(500ms);  // app not started yet; keep polling
+        }
     }
 
     if (latencyReport) printLatency(receiver);

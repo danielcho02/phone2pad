@@ -21,18 +21,22 @@ USB-C로 연결한 Android 폰을 Windows 트랙패드처럼 사용하는 방법
    - GitHub Release의 `phone2pad-android-vX.Y.Z.apk`를 받아 설치하세요.
    - "출처를 알 수 없는 앱 설치"를 허용해야 할 수 있습니다.
 
-## 3. PC client 실행
+## 3. PC client 먼저 실행
 
 1. GitHub Release의 `phone2pad-windows-x64-vX.Y.Z.zip`을 받아 압축을 풉니다.
    (별도 런타임 설치 불필요 — 정적 링크된 실행 파일입니다.)
 2. 압축을 푼 폴더에서 **`phone2pad_client.exe`**를 실행합니다.
+   - client는 adb forward를 설정하고 연결을 **대기**합니다.
+     (폰 앱을 자동으로 켜지 않습니다.)
+   - 콘솔에 `Open phone2pad on your Android phone and tap Trackpad Mode Start.`
+     안내가 보이면 정상입니다. 종료는 Ctrl+C.
 
-## 4. 연결
+## 4. 폰에서 트랙패드 모드 시작
 
 1. 폰을 USB 케이블로 PC에 연결합니다.
 2. 폰에 "USB 디버깅을 허용하시겠습니까?" 창이 뜨면 **허용**합니다.
-3. 폰의 phone2pad 앱을 열고 **[패드 시작]**을 누릅니다.
-   - 화면이 검게 변하면 트랙패드 모드입니다.
+3. 폰의 phone2pad 앱을 열고 **[트랙패드 모드 시작]**을 누릅니다.
+   - 화면이 검게 변하면 트랙패드 모드이며, 이때 PC client가 연결됩니다.
 
 ## 5. 제스처
 

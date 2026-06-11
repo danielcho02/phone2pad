@@ -89,10 +89,15 @@
 현재 USB/ADB user-mode MVP(Phase A/B)를 배포 가능한 형태로 정리. Phase C(드라이버),
 Wi-Fi/Bluetooth는 범위 외.
 
+**공식 사용 흐름 (v0.2.0, 수동 시작만 지원)**
+PC client는 폰 앱을 자동 실행하지 않는다. ① PC에서 `phone2pad_client.exe` 실행
+(adb forward만 설정하고 대기) → ② 폰에서 phone2pad 앱 실행 → ③ `MainActivity`에서
+[트랙패드 모드 시작] → ④ `BlackPadActivity` 검정 화면 + 서버 시작 → ⑤ client 연결.
+
 **산출물**
-- Android: `MainActivity` 런처(USB 사용법 안내 + [패드 시작]), `versionName 0.2.0`,
+- Android: `MainActivity` 런처(USB 사용법 안내 + [트랙패드 모드 시작]), `versionName 0.2.0`,
   release 서명 설정(`keystore.properties` 기반, 키는 커밋 금지)
-- PC: 정적 CRT(`/MT`) 빌드로 self-contained Windows zip
+- PC: 정적 CRT(`/MT`) 빌드로 self-contained Windows zip, **auto-launch(am start) 기본 제거**
 - `scripts/package-release.ps1`: Release 빌드 → zip → (키 있으면) APK/AAB → `SHA256SUMS.txt`
 - 문서: `QUICKSTART.md`, `RELEASE.md`, `CHANGELOG.md`, `PRIVACY.md`, `LICENSE`(MIT)
 
@@ -100,7 +105,8 @@ Wi-Fi/Bluetooth는 범위 외.
 - [x] `scripts/test-all.ps1` 회귀 유지 (proto L1 + client L2/L3 + `:app:assembleDebug`)
 - [x] `package-release.ps1`이 self-contained zip 생성 (client는 시스템 DLL만 의존)
 - [x] keystore 없으면 Android release asset SKIP + 경고 (debug APK는 release asset 아님)
-- [x] `BlackPadActivity` 직접 기동 경로(`adb am start`) 유지, 앱 실행 시 `MainActivity` 우선
+- [x] client가 폰 앱을 자동 실행하지 않고 연결 대기 (수동 [트랙패드 모드 시작] 필요)
+- [x] `BlackPadActivity` 직접 기동 경로(`adb am start`)는 개발자용으로 유지(`exported=true`)
 - [ ] GitHub Release `v0.2.0` 게시 (사용자: 태그 push + `gh release create`)
 - [ ] Google Play Internal testing 업로드 (사용자: Play Console, AAB + Data safety + Privacy URL)
 
@@ -110,6 +116,8 @@ Wi-Fi/Bluetooth는 범위 외.
 - HAPTIC 패킷: 탭/클릭 시 폰 진동 피드백
 - 폰 전력 최적화: 사용 안 할 때 send 스레드 sleep, 화면 OLED 완전 검정 확인
 - 연결 UX: 토스트 없는 자동 시작/종료, PC 트레이 아이콘
+  - **auto-launch 재검토**: PC client가 `adb am start`로 폰 패드 모드를 자동 진입시키는
+    옵션(`--auto-launch`)을 wireless/polish 단계에서 다시 검토 (v0.2.0에서는 수동 시작만 지원)
 - 지연 측정 리포트 자동화 (p50/p95/p99)
 
 ---

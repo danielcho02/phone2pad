@@ -11,8 +11,8 @@
                 │  USB (adb forward tcp:38917 tcp:38917)
 ┌───────────────▼─────────────── Windows PC ┐
 │  pc/client  (user-mode 서비스, C++)        │
-│    ├─ AdbManager: 장치 감지, forward 설정, │
-│    │   폰 앱 자동 기동 (am start)          │
+│    ├─ AdbManager: 장치 감지, forward 설정  │
+│    │   (v0.2.0: 폰 앱 자동 기동 안 함)      │
 │    ├─ FrameReceiver: TCP 수신, 패킷 파싱   │
 │    ├─ FrameRecorder: 트레이스 녹화 (.ppt)  │
 │    └─ Sink (전략 패턴, Phase별 교체):       │
@@ -42,8 +42,11 @@
 - 폰에서 하지 않는 것: 제스처 판별, 좌표 스케일링, 스무딩
 
 ### 2.2 PC 클라이언트 (`pc/client/`)
-- ADB 수명주기 관리: `adb devices` 폴링 → 연결 감지 시
-  `adb forward tcp:38917 tcp:38917` + `adb shell am start -n <pkg>/.BlackPadActivity`
+- ADB 수명주기 관리: `adb devices` 폴링 → 연결 감지 시 `adb forward tcp:38917 tcp:38917`
+  - v0.2.0 공식 흐름은 **수동 시작**: client는 forward만 설정하고 연결을 대기하며,
+    폰 앱을 자동 기동하지 않는다. 사용자가 `MainActivity`에서 [트랙패드 모드 시작]을
+    눌러 `BlackPadActivity`를 연다. (개발자는 `adb shell am start -n <pkg>/.BlackPadActivity`로
+    수동 기동 가능. auto-launch 옵션은 추후 polish 단계에서 재검토 — `04-ROADMAP.md`)
 - `FrameReceiver`: 길이-프리픽스 패킷 스트림 파싱 (`02-PROTOCOL.md`)
 - `Sink` 인터페이스: `void onFrame(const TouchFrame&)`
   - Phase 전환 = Sink 구현 교체. 수신/파싱 코드는 전 Phase 공유.

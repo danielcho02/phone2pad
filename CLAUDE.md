@@ -87,10 +87,11 @@ phone2pad/
 - [ ] Phase C: PTP 가상 HID 드라이버 (네이티브 트랙패드 인식) — 보류
 - [~] Phase D: distribution + 폴리시
       - [~] D-1 distribution (배포 패키징): USB/ADB MVP를 배포 형태로 정리
-        - 구현 완료: MainActivity 런처(USB 안내 + [패드 시작], BlackPadActivity는
-          landscape 패드 전용 유지·adb am start 경로 보존), versionName 0.2.0 +
-          release 서명 설정(keystore.properties 기반, 키 커밋 금지), PC 정적 CRT(/MT)
-          self-contained zip, scripts/package-release.ps1(zip/APK·AAB/SHA256SUMS),
+        - 구현 완료: MainActivity 런처(USB 안내 + [트랙패드 모드 시작], BlackPadActivity는
+          landscape 패드 전용 유지·exported=true로 adb am start 수동 경로 보존),
+          공식 흐름은 수동 시작(client는 auto-launch 안 함, forward만 설정 후 연결 대기),
+          versionName 0.2.0 + release 서명 설정(keystore.properties 기반, 키 커밋 금지),
+          PC 정적 CRT(/MT) self-contained zip, scripts/package-release.ps1(zip/APK·AAB/SHA256SUMS),
           QUICKSTART/RELEASE/CHANGELOG/PRIVACY/LICENSE(MIT)
         - 자동 검증: test-all.ps1 회귀 유지, package-release dry-run으로 self-contained
           zip 생성(client는 시스템 DLL만 의존), keystore 없으면 Android asset SKIP

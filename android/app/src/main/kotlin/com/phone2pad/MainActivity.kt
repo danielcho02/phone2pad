@@ -43,9 +43,11 @@ class MainActivity : android.app.Activity() {
             text = listOf(
                 "USB 트랙패드로 사용하려면:",
                 "",
-                "1. PC에서 phone2pad client 실행",
-                "2. USB 케이블로 PC와 연결",
-                "3. USB 디버깅 허용",
+                "1. PC에서 phone2pad_client.exe 실행",
+                "2. USB 케이블로 PC와 연결, USB 디버깅 허용",
+                "3. 이 화면에서 [트랙패드 모드 시작] 누르기",
+                "",
+                "검정 화면에서만 터치 입력이 PC로 전송됩니다.",
             ).joinToString("\n")
             textSize = 16f
             gravity = Gravity.CENTER
@@ -53,7 +55,7 @@ class MainActivity : android.app.Activity() {
         }
 
         val startButton = Button(this).apply {
-            text = "패드 시작"
+            text = "트랙패드 모드 시작"
             setOnClickListener {
                 startActivity(Intent(this@MainActivity, BlackPadActivity::class.java))
             }

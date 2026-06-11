@@ -77,9 +77,13 @@ phone2pad/
       - 구현 완료: GestureRouter(1손가락→MouseSink, 2+→GestureSink, peak-latch),
         GestureSink(2손가락 스크롤/우클릭/핀치, 3·4손가락 스와이프 → SendInput),
         InputInjector 확장(wheel/hwheel/right/key), replay `--sink gesture`
+      - 클릭/드래그 개선: MouseSink long-press 드래그(Idle→OneFingerDown→
+        Moving/DragArmed→Dragging, lift/멀티터치/disconnect 시 leftUp 보장),
+        2손가락 우클릭 안정화(tap 한도 완화 + landing/lift skew 가드)
       - 자동 테스트 통과: gesture_sink/gesture_router L2 + 합성 fixture L3 (오발동 0),
-        기존 Phase A·proto 회귀 유지
-      - 실기기 검증(L4) 대기: 실사용 자연스러움, 3손가락 Alt+Tab 신뢰성 튜닝
+        mouse_sink 드래그 케이스 추가, 기존 Phase A·proto 회귀 유지
+      - 실기기 검증(L4) 대기: 실사용 자연스러움, 3손가락 Alt+Tab 신뢰성 튜닝,
+        long-press 드래그 체감, 2손가락 우클릭 신뢰성
 - [ ] Phase C: PTP 가상 HID 드라이버 (네이티브 트랙패드 인식)
 - [ ] Phase D: 폴리시 — 팜 리젝션, 햅틱, 전력 최적화
 

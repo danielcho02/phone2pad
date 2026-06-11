@@ -78,7 +78,13 @@ void GestureSink::onFrame(const proto::TouchFrame& frame) {
     }
 
     peakCount_ = std::max(peakCount_, a.count);
-    maxTravelPx_ = std::max(maxTravelPx_, maxAxis(a.cx - anchorCx_, a.cy - anchorCy_));
+    // Tap travel is only meaningful for a clean 2-finger session: when a finger is mid-land
+    // or mid-lift the centroid jumps to a single contact (tens of px). maxTravelPx_ feeds
+    // only the 2-finger tap (3/4-finger swipes use anchorCx_/anchorCy_ directly), so guard
+    // it to count==2 frames to keep a tap with landing/lift skew from inflating it.
+    if (a.count == 2) {
+        maxTravelPx_ = std::max(maxTravelPx_, maxAxis(a.cx - anchorCx_, a.cy - anchorCy_));
+    }
 
     if (!settled_) {
         // Lock the finger count once 4 are seen (can't grow further) or the settle
@@ -125,11 +131,16 @@ void GestureSink::begin(double cx, double cy, double dist, int count, std::uint3
 }
 
 void GestureSink::handleTwo(double cx, double cy, double dist, int activeCount) {
+    // Only act on clean two-contact frames. A frame with one finger mid-land or mid-lift
+    // has a centroid that has jumped to a single contact; acting on it would falsely commit
+    // a scroll and suppress the right-click of a two-finger tap with landing/lift skew.
+    if (activeCount != 2) return;
+
     if (!committed_) {
         const double move = maxAxis(cx - anchorCx_, cy - anchorCy_);
-        const double dChg = (activeCount == 2) ? std::abs(dist - anchorDist_) : 0.0;
+        const double dChg = std::abs(dist - anchorDist_);
         const bool pinchOk = cfg_.enablePinch;
-        if (move > cfg_.tapMovePx || (pinchOk && dChg > cfg_.tapMovePx)) {
+        if (move > cfg_.scrollCommitPx || (pinchOk && dChg > cfg_.scrollCommitPx)) {
             mode_ = (pinchOk && dChg > move) ? Mode::Pinch : Mode::Scroll;
             committed_ = true;
             // Re-anchor incremental state at commit so the dead-zone travel before
@@ -146,7 +157,7 @@ void GestureSink::handleTwo(double cx, double cy, double dist, int activeCount) 
         emitScroll(cx - lastCx_, cy - lastCy_);
         lastCx_ = cx;
         lastCy_ = cy;
-    } else if (mode_ == Mode::Pinch && activeCount == 2) {
+    } else if (mode_ == Mode::Pinch) {  // activeCount == 2 guaranteed above
         emitPinch(dist);
     }
 }

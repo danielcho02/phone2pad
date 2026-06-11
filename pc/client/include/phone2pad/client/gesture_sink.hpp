@@ -22,9 +22,16 @@ struct GestureConfig {
     bool naturalScroll = true;       // finger direction follows content (phone-like)
     int scrollPixelsPerNotch = 30;   // centroid px per WHEEL_DELTA notch
 
-    // 2-finger tap -> right click
-    std::uint32_t tapMaxUs = 180'000;  // max press duration to count as a tap
-    int tapMovePx = 12;                // max centroid travel to count as a tap
+    // 2-finger tap -> right click. Tuned looser than the 1-finger tap: a deliberate
+    // two-finger press runs longer and two fingers wobble more than one, so the duration
+    // and travel limits are generous (real-device Phase B L4 tuning).
+    std::uint32_t tapMaxUs = 300'000;  // max press duration to count as a tap
+    int tapMovePx = 24;                // max centroid travel to count as a tap
+
+    // 2-finger scroll/pinch dead-zone: centroid (or contact-distance) travel before a
+    // scroll/pinch commits. Kept tight and separate from tapMovePx so scroll stays
+    // responsive while the right-click tap tolerance can loosen independently.
+    int scrollCommitPx = 12;
 
     // 3/4-finger swipe: centroid travel (px) before the gesture commits
     int swipeCommitPx = 80;

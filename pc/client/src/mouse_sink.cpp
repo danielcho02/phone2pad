@@ -22,7 +22,7 @@ void MouseSink::onFrame(const proto::TouchFrame& frame) {
 
     if (activeCount == 1) {
         const proto::Contact& c = *active;
-        if (!inContact_) {
+        if (state_ == DragState::Idle) {
             // First frame of a single-finger session: anchor only, no move (avoids
             // a jump when resuming from multi-touch or after a lift).
             beginContact(c, frame.timestampUs);
@@ -36,29 +36,54 @@ void MouseSink::onFrame(const proto::TouchFrame& frame) {
         const int mvY = static_cast<int>(accumY_);
         accumX_ -= mvX;
         accumY_ -= mvY;
-        if (mvX != 0 || mvY != 0) {
-            inj_.moveRelative(mvX, mvY);
+        const bool moved = (mvX != 0 || mvY != 0);
+        if (moved) {
+            inj_.moveRelative(mvX, mvY);  // a held drag keeps moving with the button down
         }
         lastX_ = c.x;
         lastY_ = c.y;
         const int tx = std::abs(static_cast<int>(c.x) - downX_);
         const int ty = std::abs(static_cast<int>(c.y) - downY_);
         maxTravelPx_ = std::max(maxTravelPx_, std::max(tx, ty));
+
+        // State transitions. Travel past the arm tolerance makes this a plain cursor move
+        // (never a drag); otherwise holding past the timer arms a left-button drag. The
+        // travel check comes first: at the first move frame after a still hold the travel
+        // is still small, so the elapsed branch arms the drag as intended.
+        if (state_ == DragState::OneFingerDown) {
+            const std::uint32_t elapsedUs = frame.timestampUs - downTimeUs_;  // wrap-safe
+            if (maxTravelPx_ > cfg_.dragStartMovePx) {
+                state_ = DragState::Moving;
+            } else if (elapsedUs >= cfg_.longPressDragUs) {
+                state_ = DragState::DragArmed;
+                inj_.leftDown();  // emitted exactly once on this edge
+            }
+        } else if (state_ == DragState::DragArmed && moved) {
+            state_ = DragState::Dragging;
+        }
         return;
     }
 
-    // 0 or 2+ active contacts.
-    if (inContact_ && activeCount == 0) {
-        // Single finger lifted -> maybe a tap. Two quick taps emit two clicks, which
-        // the OS recognizes as a double-click (docs/04 Phase A double-tap).
-        endContactAsTap(frame.timestampUs);
+    // 0 or 2+ active contacts: the single-finger session ends here.
+    if (state_ != DragState::Idle) {
+        if (activeCount == 0 && state_ != DragState::DragArmed &&
+            state_ != DragState::Dragging) {
+            // Plain lift -> maybe a tap. Two quick taps emit two clicks, which the OS
+            // recognizes as a double-click (docs/04 Phase A double-tap).
+            endContactAsTap(frame.timestampUs);
+        } else {
+            // Lift while dragging, or a second finger interrupting: release the button so a
+            // drag never sticks. releaseDragIfHeld is a no-op outside a drag, so a plain
+            // finger landing into multi-touch just freezes the cursor as before.
+            releaseDragIfHeld();
+        }
     }
-    // Multi-touch (gesture, Phase B) or full lift: freeze cursor, reset anchor.
-    inContact_ = false;
+    // Multi-touch (gesture) or full lift: freeze cursor, reset anchor.
+    state_ = DragState::Idle;
 }
 
 void MouseSink::beginContact(const proto::Contact& c, std::uint32_t tsUs) {
-    inContact_ = true;
+    state_ = DragState::OneFingerDown;
     lastX_ = c.x;
     lastY_ = c.y;
     accumX_ = 0.0;
@@ -73,6 +98,12 @@ void MouseSink::endContactAsTap(std::uint32_t tsUs) {
     const std::uint32_t durUs = tsUs - downTimeUs_;  // u32 wrap-safe
     if (durUs <= cfg_.tapMaxUs && maxTravelPx_ <= cfg_.tapMovePx) {
         inj_.leftClick();
+    }
+}
+
+void MouseSink::releaseDragIfHeld() {
+    if (state_ == DragState::DragArmed || state_ == DragState::Dragging) {
+        inj_.leftUp();  // guarantees the held button is released on lift/cancel/disconnect
     }
 }
 

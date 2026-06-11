@@ -101,6 +101,49 @@ TEST_CASE("two-finger tap (inside settle window) emits one right click, no wheel
     CHECK_EQ(inj.clicks(), 0);
 }
 
+TEST_CASE("two-finger press held ~200ms then lift emits one right click") {
+    MockInjector inj;
+    GestureSink s(inj);  // tapMaxUs=300ms default
+    feed(s, {
+        frame(0, {ct(0, true, 200, 300), ct(1, true, 400, 300)}),
+        frame(100000, {ct(0, true, 200, 300), ct(1, true, 400, 300)}),   // past settle, still held
+        frame(200000, {ct(0, true, 201, 300), ct(1, true, 399, 300)}),   // ~200ms, near-stationary
+        frame(220000, {ct(0, false, 201, 300), ct(1, false, 399, 300)}), // lift < 300ms
+    });
+    CHECK_EQ(inj.rightClicks(), 1);   // deliberate press still counts as a tap
+    CHECK_EQ(inj.wheelEvents(), 0);
+    CHECK_EQ(inj.clicks(), 0);
+}
+
+TEST_CASE("two-finger tap with slight micro-movement still right clicks") {
+    MockInjector inj;
+    GestureSink s(inj);  // tapMovePx=24, scrollCommitPx=12
+    feed(s, {
+        frame(0, {ct(0, true, 200, 300), ct(1, true, 400, 300)}),
+        frame(40000, {ct(0, true, 206, 308), ct(1, true, 408, 306)}),  // centroid drift < 24px
+        frame(80000, {ct(0, false, 206, 308), ct(1, false, 408, 306)}),
+    });
+    CHECK_EQ(inj.rightClicks(), 1);   // wobble under the tap tolerance is not a scroll
+    CHECK_EQ(inj.wheelEvents(), 0);
+}
+
+TEST_CASE("two-finger tap with lift skew right clicks, never scrolls") {
+    MockInjector inj;
+    GestureSink s(inj);
+    // Held past the 90ms settle window, then one finger lifts a frame before the other.
+    // The single-contact frame's centroid jumps ~100px to one finger; without the
+    // activeCount==2 guard that jump would commit a scroll (stray wheel + suppressed tap).
+    feed(s, {
+        frame(0, {ct(0, true, 200, 300), ct(1, true, 400, 300)}),
+        frame(100000, {ct(0, true, 200, 300), ct(1, true, 400, 300)}),  // settle
+        frame(150000, {ct(0, true, 200, 300), ct(1, true, 400, 300)}),  // still held, no commit
+        frame(170000, {ct(0, true, 200, 300)}),                         // finger 1 lifts first
+        frame(190000, {ct(0, false, 200, 300)}),                        // finger 0 lifts -> all up
+    });
+    CHECK_EQ(inj.rightClicks(), 1);   // skew did not suppress the right click
+    CHECK_EQ(inj.wheelEvents(), 0);   // and the centroid jump emitted no stray scroll
+}
+
 TEST_CASE("long/large two-finger move is a scroll, not a tap") {
     MockInjector inj;
     GestureSink s(inj);

@@ -53,11 +53,20 @@
   - 2+가 한 번이라도 관측되면 전손가락 lift까지 그 세션을 GestureSink로 고정한다
     (peak-latch: 세션 중 강등 없음). 진입 시 첫 멀티터치 프레임을 MouseSink에 1회
     전달해 이동 앵커를 리셋 → 2→1손가락 decay에서 커서 점프 방지.
-  - `GestureSink` 상태머신: `Idle → Tracking(2/3/4) → Committed/Cancelled`.
+  - **Multi-touch settle window**: 첫 2+ 접촉 후 일정 시간(기본 90ms, 또는 4접촉 관측 시
+    즉시) 동안 손가락 수를 확정하지 않고 `maxActiveCount`만 추적한다. landing skew(3개 먼저
+    닿고 4번째가 늦게 닿음)를 흡수해 4손가락이 3손가락으로 오인식되는 것을 막는다. window
+    동안은 어떤 제스처도 commit하지 않고, 확정 시점에 centroid/거리 anchor를 리셋해 초기
+    skew가 제스처 delta로 들어가지 않게 한다.
+  - `GestureSink` 상태머신: `Idle → Settling → Tracking(2/3/4) → Committed/AltTabSelecting/Cancelled`.
     - 2손가락: 스크롤(`wheel`/`hwheel`), 탭=우클릭, 핀치=Ctrl+휠.
       스크롤 vs 핀치는 중심점 이동량 vs 손가락 간 거리 변화로 disambiguation 후 확정.
-    - 3손가락: ↑=Win+Tab, ↓=Win+D, ←/→=Alt(+Shift)+Tab.
-    - 4손가락: ←/→=Ctrl+Win+←/→(가상 데스크탑), ↑/↓=3손가락 미러(옵션).
+      (settle window 안에서 끝나는 빠른 2손가락 탭도 `peakCount`로 판정해 보존.)
+    - 3손가락: ↑=Win+Tab, ↓=Win+D. **←/→는 인터랙티브 Alt+Tab**(`AltTabSelecting`):
+      commit 시 Alt를 누른 채 진입 방향대로 Tab(오른쪽)/Shift+Tab(왼쪽) 1회로 전환 UI를
+      띄우고, 손가락을 좌우로 움직이며 step마다 선택을 이동하다가, **전손가락 lift(=ACTION_CANCEL
+      =disconnect emitLift) 시 Alt를 떼어 선택을 확정**한다. 이 상태에선 다른 제스처가 섞이지 않음.
+    - 4손가락: ←/→=Ctrl+Win+←/→(가상 데스크탑, 방향키 extended-key flag), ↑/↓=3손가락 미러(옵션).
     - 모두 `SendInput` 주입. 폰은 여전히 raw 센서 — 제스처 판별은 전부 PC에서.
 - 설정: Phase A/B 모두 CLI 플래그 + 기본값 구조체(`MouseSinkConfig`/`GestureConfig`).
   (`config.toml` 파서는 미도입 — 추후 과제.)

@@ -1,0 +1,10 @@
+# Three fingers held past the settle window, then swiped right -> interactive Alt+Tab.
+# Commit opens the switcher (Alt down + Tab), continued rightward motion steps the
+# selection (more Tab presses), and the all-lift confirms it (Alt up). Validates the
+# Phase B fix #1 hold-and-step behaviour at L3.
+{"t": 0,      "contacts": [{"id":0,"tip":1,"x":200,"y":300}, {"id":1,"tip":1,"x":300,"y":300}, {"id":2,"tip":1,"x":400,"y":300}]}
+{"t": 100000, "contacts": [{"id":0,"tip":1,"x":200,"y":300}, {"id":1,"tip":1,"x":300,"y":300}, {"id":2,"tip":1,"x":400,"y":300}]}
+{"t": 150000, "contacts": [{"id":0,"tip":1,"x":290,"y":300}, {"id":1,"tip":1,"x":390,"y":300}, {"id":2,"tip":1,"x":490,"y":300}]}
+{"t": 200000, "contacts": [{"id":0,"tip":1,"x":370,"y":300}, {"id":1,"tip":1,"x":470,"y":300}, {"id":2,"tip":1,"x":570,"y":300}]}
+{"t": 250000, "contacts": [{"id":0,"tip":1,"x":450,"y":300}, {"id":1,"tip":1,"x":550,"y":300}, {"id":2,"tip":1,"x":650,"y":300}]}
+{"t": 300000, "contacts": [{"id":0,"tip":0,"x":450,"y":300}, {"id":1,"tip":0,"x":550,"y":300}, {"id":2,"tip":0,"x":650,"y":300}]}

@@ -65,9 +65,10 @@ TEST_CASE("two-finger gesture routes to GestureSink, cursor stays put") {
 
     const std::vector<TouchFrame> scroll = {
         frame(0, {ct(0, true, 200, 300), ct(1, true, 400, 300)}),
-        frame(8333, {ct(0, true, 200, 250), ct(1, true, 400, 250)}),
-        frame(16666, {ct(0, true, 200, 200), ct(1, true, 400, 200)}),
-        frame(25000, {ct(0, false, 200, 200), ct(1, false, 400, 200)}),
+        frame(100000, {ct(0, true, 200, 300), ct(1, true, 400, 300)}),  // settle window
+        frame(150000, {ct(0, true, 200, 240), ct(1, true, 400, 240)}),
+        frame(200000, {ct(0, true, 200, 160), ct(1, true, 400, 160)}),
+        frame(250000, {ct(0, false, 200, 160), ct(1, false, 400, 160)}),
     };
     for (const auto& f : scroll) router.onFrame(f);
 

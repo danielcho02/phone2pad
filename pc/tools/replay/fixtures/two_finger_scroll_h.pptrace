@@ -1,10 +1,10 @@
-# Two fingers moving straight right together (x increasing), constant spacing so
-# distance is unchanged (not a pinch). GestureSink -> horizontal wheel (hwheel),
-# natural direction = positive. Used by L2/L3 scroll tests.
+# Two fingers held briefly, then moved straight right together (x increasing),
+# constant spacing so distance is unchanged (not a pinch). Initial hold spans the
+# settle window. GestureSink -> horizontal wheel (hwheel), natural = positive.
 {"t": 0,      "contacts": [{"id":0,"tip":1,"x":100,"y":300}, {"id":1,"tip":1,"x":300,"y":300}]}
-{"t": 8333,   "contacts": [{"id":0,"tip":1,"x":140,"y":300}, {"id":1,"tip":1,"x":340,"y":300}]}
-{"t": 16666,  "contacts": [{"id":0,"tip":1,"x":180,"y":300}, {"id":1,"tip":1,"x":380,"y":300}]}
-{"t": 25000,  "contacts": [{"id":0,"tip":1,"x":220,"y":300}, {"id":1,"tip":1,"x":420,"y":300}]}
-{"t": 33333,  "contacts": [{"id":0,"tip":1,"x":260,"y":300}, {"id":1,"tip":1,"x":460,"y":300}]}
-{"t": 41666,  "contacts": [{"id":0,"tip":1,"x":300,"y":300}, {"id":1,"tip":1,"x":500,"y":300}]}
-{"t": 50000,  "contacts": [{"id":0,"tip":0,"x":300,"y":300}, {"id":1,"tip":0,"x":500,"y":300}]}
+{"t": 100000, "contacts": [{"id":0,"tip":1,"x":100,"y":300}, {"id":1,"tip":1,"x":300,"y":300}]}
+{"t": 150000, "contacts": [{"id":0,"tip":1,"x":160,"y":300}, {"id":1,"tip":1,"x":360,"y":300}]}
+{"t": 200000, "contacts": [{"id":0,"tip":1,"x":220,"y":300}, {"id":1,"tip":1,"x":420,"y":300}]}
+{"t": 250000, "contacts": [{"id":0,"tip":1,"x":280,"y":300}, {"id":1,"tip":1,"x":480,"y":300}]}
+{"t": 300000, "contacts": [{"id":0,"tip":1,"x":340,"y":300}, {"id":1,"tip":1,"x":540,"y":300}]}
+{"t": 350000, "contacts": [{"id":0,"tip":0,"x":340,"y":300}, {"id":1,"tip":0,"x":540,"y":300}]}

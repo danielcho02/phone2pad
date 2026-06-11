@@ -77,9 +77,25 @@ TEST_CASE("replay three_finger_swipe_up: Win+Tab, no scroll") {
     CHECK_EQ(g.wheelEvents(), 0);
 }
 
-TEST_CASE("replay four_finger_swipe_left: Ctrl+Win+Left") {
+TEST_CASE("replay four_finger_swipe_left: Ctrl+Win+Left despite 3->4 landing skew") {
     const MockInjector g = replayGesture("four_finger_swipe_left.pptrace");
     CHECK_EQ(g.keyDowns, (std::vector<int>{0x11, 0x5B, 0x25}));
+    CHECK(g.keyDowns.size() == 3);  // no extra 3-finger Alt(0x12) misfire
+}
+
+TEST_CASE("replay three_finger_alt_tab_right: Alt held, Tab steps, Alt up on lift") {
+    const MockInjector g = replayGesture("three_finger_alt_tab_right.pptrace");
+    int altDown = 0, altUp = 0, tabDown = 0;
+    for (const auto& e : g.events) {
+        if (e == "key_down 18") ++altDown;  // 0x12 VK_MENU
+        else if (e == "key_up 18") ++altUp;
+        else if (e == "key_down 9") ++tabDown;  // 0x09 VK_TAB
+    }
+    CHECK_EQ(altDown, 1);
+    CHECK_EQ(altUp, 1);          // released exactly once, on lift
+    CHECK(tabDown >= 2);         // opener + at least one step
+    CHECK_EQ(g.wheelEvents(), 0);
+    CHECK_EQ(g.rightClicks(), 0);
 }
 
 TEST_CASE("replay pinch_zoom: Ctrl+wheel zoom in, no right-click") {

@@ -1,9 +1,10 @@
-# Two fingers moving apart with a (nearly) fixed centroid -> pinch zoom in.
-# GestureSink -> Ctrl + wheel (positive = zoom in). Distance change dominates centroid
-# movement, so it commits to pinch, not scroll. Used by L2/L3 pinch tests (Phase B2).
+# Two fingers held past the settle window, then moved apart with a fixed centroid ->
+# pinch zoom in. Distance change dominates centroid movement, so it commits to pinch,
+# not scroll. GestureSink -> Ctrl + wheel (positive = zoom in). Phase B2.
 {"t": 0,      "contacts": [{"id":0,"tip":1,"x":300,"y":300}, {"id":1,"tip":1,"x":340,"y":300}]}
-{"t": 8333,   "contacts": [{"id":0,"tip":1,"x":280,"y":300}, {"id":1,"tip":1,"x":360,"y":300}]}
-{"t": 16666,  "contacts": [{"id":0,"tip":1,"x":250,"y":300}, {"id":1,"tip":1,"x":390,"y":300}]}
-{"t": 25000,  "contacts": [{"id":0,"tip":1,"x":210,"y":300}, {"id":1,"tip":1,"x":430,"y":300}]}
-{"t": 33333,  "contacts": [{"id":0,"tip":1,"x":200,"y":300}, {"id":1,"tip":1,"x":440,"y":300}]}
-{"t": 41666,  "contacts": [{"id":0,"tip":0,"x":200,"y":300}, {"id":1,"tip":0,"x":440,"y":300}]}
+{"t": 100000, "contacts": [{"id":0,"tip":1,"x":300,"y":300}, {"id":1,"tip":1,"x":340,"y":300}]}
+{"t": 150000, "contacts": [{"id":0,"tip":1,"x":270,"y":300}, {"id":1,"tip":1,"x":370,"y":300}]}
+{"t": 200000, "contacts": [{"id":0,"tip":1,"x":240,"y":300}, {"id":1,"tip":1,"x":400,"y":300}]}
+{"t": 250000, "contacts": [{"id":0,"tip":1,"x":210,"y":300}, {"id":1,"tip":1,"x":430,"y":300}]}
+{"t": 300000, "contacts": [{"id":0,"tip":1,"x":190,"y":300}, {"id":1,"tip":1,"x":450,"y":300}]}
+{"t": 350000, "contacts": [{"id":0,"tip":0,"x":190,"y":300}, {"id":1,"tip":0,"x":450,"y":300}]}

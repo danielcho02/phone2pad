@@ -80,10 +80,27 @@ void GestureSink::onFrame(const proto::TouchFrame& frame) {
     peakCount_ = std::max(peakCount_, a.count);
     maxTravelPx_ = std::max(maxTravelPx_, maxAxis(a.cx - anchorCx_, a.cy - anchorCy_));
 
-    if (peakCount_ >= 4) {
-        handleSwipe(a.cx, a.cy, 4);
-    } else if (peakCount_ == 3) {
-        handleSwipe(a.cx, a.cy, 3);
+    if (!settled_) {
+        // Lock the finger count once 4 are seen (can't grow further) or the settle
+        // window elapses. Re-anchor to the current centroid so the landing-skew motion
+        // during the window is not counted as gesture delta.
+        const bool windowElapsed = (frame.timestampUs - startUs_) >= cfg_.settleWindowUs;
+        if (peakCount_ >= 4 || windowElapsed) {
+            settled_ = true;
+            sessionFingers_ = std::min(peakCount_, 4);
+            anchorCx_ = lastCx_ = a.cx;
+            anchorCy_ = lastCy_ = a.cy;
+            anchorDist_ = lastDist_ = a.dist;
+            accumX_ = accumY_ = accumPinch_ = 0.0;
+            maxTravelPx_ = 0.0;
+        }
+        return;  // no gesture commit while settling
+    }
+
+    if (sessionFingers_ >= 4) {
+        handleFour(a.cx, a.cy);
+    } else if (sessionFingers_ == 3) {
+        handleThreeFinger(a.cx, a.cy);
     } else {
         handleTwo(a.cx, a.cy, a.dist, a.count);
     }
@@ -93,6 +110,8 @@ void GestureSink::begin(double cx, double cy, double dist, int count, std::uint3
     active_ = true;
     peakCount_ = count;
     startUs_ = tsUs;
+    settled_ = false;
+    sessionFingers_ = 0;
     anchorCx_ = lastCx_ = cx;
     anchorCy_ = lastCy_ = cy;
     anchorDist_ = lastDist_ = dist;
@@ -100,6 +119,9 @@ void GestureSink::begin(double cx, double cy, double dist, int count, std::uint3
     maxTravelPx_ = 0.0;
     committed_ = false;
     mode_ = Mode::None;
+    altActive_ = false;
+    shiftHeld_ = false;
+    altAnchorX_ = 0.0;
 }
 
 void GestureSink::handleTwo(double cx, double cy, double dist, int activeCount) {
@@ -173,32 +195,39 @@ void GestureSink::ctrlWheel(int delta) {
     inj_.keyUp(vk::CTRL);
 }
 
-void GestureSink::handleSwipe(double cx, double cy, int fingers) {
+void GestureSink::handleThreeFinger(double cx, double cy) {
+    if (committed_) {
+        if (mode_ == Mode::AltTab) handleAltTab(cx);
+        return;
+    }
+    const double dxs = cx - anchorCx_;
+    const double dys = cy - anchorCy_;
+    if (maxAxis(dxs, dys) <= cfg_.swipeCommitPx) return;
+
+    committed_ = true;
+    if (std::abs(dxs) >= std::abs(dys)) {
+        // Horizontal: open interactive Alt+Tab and seed it with the swipe direction.
+        mode_ = Mode::AltTab;
+        altAnchorX_ = cx;
+        enterAltTab(dxs > 0);
+    } else if (dys < 0) {
+        mode_ = Mode::Swipe3;
+        inj_.keyCombo({vk::LWIN, vk::TAB});  // up: Task View
+    } else {
+        mode_ = Mode::Swipe3;
+        inj_.keyCombo({vk::LWIN, vk::D});    // down: Show desktop
+    }
+}
+
+void GestureSink::handleFour(double cx, double cy) {
     if (committed_) return;
     const double dxs = cx - anchorCx_;
     const double dys = cy - anchorCy_;
     if (maxAxis(dxs, dys) <= cfg_.swipeCommitPx) return;
 
-    const bool horizontal = std::abs(dxs) >= std::abs(dys);
     committed_ = true;
-    mode_ = (fingers == 4) ? Mode::Swipe4 : Mode::Swipe3;
-
-    if (fingers == 3) {
-        if (horizontal) {
-            if (dxs > 0)
-                inj_.keyCombo({vk::ALT, vk::TAB});           // right: next app
-            else
-                inj_.keyCombo({vk::ALT, vk::SHIFT, vk::TAB});  // left: previous app
-        } else if (dys < 0) {
-            inj_.keyCombo({vk::LWIN, vk::TAB});  // up: Task View
-        } else {
-            inj_.keyCombo({vk::LWIN, vk::D});    // down: Show desktop
-        }
-        return;
-    }
-
-    // 4 fingers: left/right switch virtual desktops; up/down optionally mirror 3-finger.
-    if (horizontal) {
+    mode_ = Mode::Swipe4;
+    if (std::abs(dxs) >= std::abs(dys)) {
         inj_.keyCombo({vk::CTRL, vk::LWIN, dxs > 0 ? vk::RIGHT : vk::LEFT});
     } else if (cfg_.fourFingerVerticalMirror) {
         if (dys < 0)
@@ -208,10 +237,56 @@ void GestureSink::handleSwipe(double cx, double cy, int fingers) {
     }
 }
 
+void GestureSink::enterAltTab(bool forward) {
+    inj_.keyDown(vk::ALT);
+    altActive_ = true;
+    tabStep(forward);  // first step reflects the commit direction (right=Tab, left=Shift+Tab)
+}
+
+void GestureSink::handleAltTab(double cx) {
+    const int step = std::max(1, cfg_.altTabStepPx);
+    while (cx - altAnchorX_ >= step) {
+        tabStep(/*forward=*/true);
+        altAnchorX_ += step;
+    }
+    while (cx - altAnchorX_ <= -step) {
+        tabStep(/*forward=*/false);
+        altAnchorX_ -= step;
+    }
+}
+
+void GestureSink::tabStep(bool forward) {
+    if (!forward) {
+        inj_.keyDown(vk::SHIFT);
+        shiftHeld_ = true;
+    }
+    inj_.keyDown(vk::TAB);
+    inj_.keyUp(vk::TAB);
+    if (!forward) {
+        inj_.keyUp(vk::SHIFT);
+        shiftHeld_ = false;
+    }
+}
+
+void GestureSink::releaseAltTab() {
+    if (!altActive_) return;
+    if (shiftHeld_) {
+        inj_.keyUp(vk::SHIFT);
+        shiftHeld_ = false;
+    }
+    inj_.keyUp(vk::ALT);  // releasing Alt confirms the highlighted window
+    altActive_ = false;
+}
+
 void GestureSink::finalizeOnLift(std::uint32_t tsUs) {
-    // A short, near-stationary 2-finger session that never committed to scroll/pinch
-    // is a 2-finger tap -> right click.
-    if (peakCount_ == 2 && !committed_) {
+    if (mode_ == Mode::AltTab) {
+        releaseAltTab();  // lift confirms the Alt+Tab selection
+        return;
+    }
+    // A short, near-stationary 2-finger session that never committed is a 2-finger tap
+    // -> right click. Judged by peakCount_ (not sessionFingers_) so a quick tap that
+    // lifts inside the settle window is still recognized.
+    if (!committed_ && peakCount_ == 2) {
         const std::uint32_t durUs = tsUs - startUs_;  // u32 wrap-safe
         if (durUs <= cfg_.tapMaxUs && maxTravelPx_ <= cfg_.tapMovePx) {
             inj_.rightClick();
@@ -220,10 +295,13 @@ void GestureSink::finalizeOnLift(std::uint32_t tsUs) {
 }
 
 void GestureSink::reset() {
+    releaseAltTab();  // safety net: hard reset / disconnect must release Alt
     active_ = false;
     committed_ = false;
     mode_ = Mode::None;
     peakCount_ = 0;
+    settled_ = false;
+    sessionFingers_ = 0;
 }
 
 }  // namespace phone2pad::client

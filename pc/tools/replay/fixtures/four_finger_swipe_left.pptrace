@@ -1,8 +1,11 @@
-# Four fingers (ids 0..3) swiping left (x decreasing) past the commit threshold.
-# GestureSink -> Ctrl+Win+Left (previous virtual desktop). Fires once per session.
-{"t": 0,      "contacts": [{"id":0,"tip":1,"x":400,"y":300}, {"id":1,"tip":1,"x":450,"y":300}, {"id":2,"tip":1,"x":500,"y":300}, {"id":3,"tip":1,"x":550,"y":300}]}
-{"t": 8333,   "contacts": [{"id":0,"tip":1,"x":370,"y":300}, {"id":1,"tip":1,"x":420,"y":300}, {"id":2,"tip":1,"x":470,"y":300}, {"id":3,"tip":1,"x":520,"y":300}]}
-{"t": 16666,  "contacts": [{"id":0,"tip":1,"x":330,"y":300}, {"id":1,"tip":1,"x":380,"y":300}, {"id":2,"tip":1,"x":430,"y":300}, {"id":3,"tip":1,"x":480,"y":300}]}
-{"t": 25000,  "contacts": [{"id":0,"tip":1,"x":290,"y":300}, {"id":1,"tip":1,"x":340,"y":300}, {"id":2,"tip":1,"x":390,"y":300}, {"id":3,"tip":1,"x":440,"y":300}]}
-{"t": 33333,  "contacts": [{"id":0,"tip":1,"x":280,"y":300}, {"id":1,"tip":1,"x":330,"y":300}, {"id":2,"tip":1,"x":380,"y":300}, {"id":3,"tip":1,"x":430,"y":300}]}
-{"t": 41666,  "contacts": [{"id":0,"tip":0,"x":280,"y":300}, {"id":1,"tip":0,"x":330,"y":300}, {"id":2,"tip":0,"x":380,"y":300}, {"id":3,"tip":0,"x":430,"y":300}]}
+# Four-finger left swipe with LANDING SKEW: only 3 fingers land first, the 4th arrives
+# 50ms later (inside the settle window). The settle window must lock this as a 4-finger
+# session and NOT misfire a 3-finger gesture. After settle, swiping left past the commit
+# threshold -> Ctrl+Win+Left (previous virtual desktop). Validates Phase B fix #2.
+{"t": 0,      "contacts": [{"id":0,"tip":1,"x":400,"y":300}, {"id":1,"tip":1,"x":450,"y":300}, {"id":2,"tip":1,"x":500,"y":300}]}
+{"t": 50000,  "contacts": [{"id":0,"tip":1,"x":400,"y":300}, {"id":1,"tip":1,"x":450,"y":300}, {"id":2,"tip":1,"x":500,"y":300}, {"id":3,"tip":1,"x":550,"y":300}]}
+{"t": 100000, "contacts": [{"id":0,"tip":1,"x":400,"y":300}, {"id":1,"tip":1,"x":450,"y":300}, {"id":2,"tip":1,"x":500,"y":300}, {"id":3,"tip":1,"x":550,"y":300}]}
+{"t": 150000, "contacts": [{"id":0,"tip":1,"x":360,"y":300}, {"id":1,"tip":1,"x":410,"y":300}, {"id":2,"tip":1,"x":460,"y":300}, {"id":3,"tip":1,"x":510,"y":300}]}
+{"t": 200000, "contacts": [{"id":0,"tip":1,"x":310,"y":300}, {"id":1,"tip":1,"x":360,"y":300}, {"id":2,"tip":1,"x":410,"y":300}, {"id":3,"tip":1,"x":460,"y":300}]}
+{"t": 250000, "contacts": [{"id":0,"tip":1,"x":290,"y":300}, {"id":1,"tip":1,"x":340,"y":300}, {"id":2,"tip":1,"x":390,"y":300}, {"id":3,"tip":1,"x":440,"y":300}]}
+{"t": 300000, "contacts": [{"id":0,"tip":0,"x":290,"y":300}, {"id":1,"tip":0,"x":340,"y":300}, {"id":2,"tip":0,"x":390,"y":300}, {"id":3,"tip":0,"x":440,"y":300}]}

@@ -1,4 +1,4 @@
-# PhantomPad
+# phone2pad
 
 > USB-C로 연결한 Android 폰을 Windows 데스크탑의 **네이티브 Precision Touchpad**로
 > 만드는 프로젝트. 폰 화면은 완전 검정(UI 없음), 제스처 해석은 Windows OS가 직접 수행.

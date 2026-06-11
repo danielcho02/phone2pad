@@ -4,9 +4,9 @@
 #include <string>
 #include <vector>
 
-#include "phantompad/client/input_injector.hpp"
+#include "phone2pad/client/input_injector.hpp"
 
-namespace phantompad::client {
+namespace phone2pad::client {
 
 struct MockInjector : InputInjector {
     std::vector<std::string> events;
@@ -32,4 +32,4 @@ struct MockInjector : InputInjector {
     }
 };
 
-}  // namespace phantompad::client
+}  // namespace phone2pad::client

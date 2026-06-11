@@ -3,17 +3,17 @@
 #include <string>
 
 #include "mock_injector.hpp"
-#include "phantompad/client/mouse_sink.hpp"
-#include "phantompad/client/replay.hpp"
-#include "phantompad/client/trace.hpp"
+#include "phone2pad/client/mouse_sink.hpp"
+#include "phone2pad/client/replay.hpp"
+#include "phone2pad/client/trace.hpp"
 #include "test_main.hpp"
 
-using namespace phantompad::client;
+using namespace phone2pad::client;
 
 namespace {
 
 std::string fixture(const char* name) {
-    return std::string(PHANTOMPAD_FIXTURE_DIR) + "/" + name;
+    return std::string(PHONE2PAD_FIXTURE_DIR) + "/" + name;
 }
 
 }  // namespace

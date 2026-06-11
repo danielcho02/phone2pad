@@ -15,7 +15,7 @@ target_include_directories(client_tests PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../proto/tests
 )
 target_compile_definitions(client_tests PRIVATE
-    "PHANTOMPAD_FIXTURE_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}/../../tools/replay/fixtures\""
+    "PHONE2PAD_FIXTURE_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}/../../tools/replay/fixtures\""
 )
 if(WIN32)
     target_compile_definitions(client_tests PRIVATE NOMINMAX)

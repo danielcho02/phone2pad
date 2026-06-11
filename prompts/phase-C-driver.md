@@ -33,7 +33,7 @@ CLAUDE.md, docs/01, docs/03(가장 중요), docs/04 Phase C를 읽고 시작해.
 
 이전 세션 결과와 docs/notes/ 를 읽고 시작해. 이번 목표: 입력 보고 경로.
 
-1. 드라이버에 IOCTL_PHANTOMPAD_SUBMIT_FRAME 추가: user-mode가 보낸 PTP input report를
+1. 드라이버에 IOCTL_PHONE2PAD_SUBMIT_FRAME 추가: user-mode가 보낸 PTP input report를
    VhfReadReportSubmit으로 주입.
 2. PtpSink 구현: TouchFrame → PTP report 변환.
    - Scan Time = timestampUs / 100, u16 wrap, 단조 증가 보장

@@ -7,11 +7,11 @@
 #include <vector>
 
 #include "json_lite.hpp"
-#include "phantompad/proto/decoder.hpp"
+#include "phone2pad/proto/decoder.hpp"
 #include "vector_support.hpp"
 
-using namespace phantompad;
-namespace ts = phantompad::testsupport;
+using namespace phone2pad;
+namespace ts = phone2pad::testsupport;
 
 namespace {
 

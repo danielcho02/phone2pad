@@ -1,5 +1,5 @@
 # PC client subtree. proto (Phase 0 codec) + client_core (Phase A receive/map/inject)
-# + the phantompad_client executable.
+# + the phone2pad_client executable.
 add_subdirectory(proto)
 
 # client_core: reused by the exe, the replay/recorder tools, and unit tests.
@@ -26,13 +26,13 @@ if(WIN32)
         _CRT_SECURE_NO_WARNINGS WIN32_LEAN_AND_MEAN NOMINMAX)
 endif()
 
-add_executable(phantompad_client src/main.cpp)
-target_link_libraries(phantompad_client PRIVATE client_core)
-target_compile_features(phantompad_client PRIVATE cxx_std_20)
+add_executable(phone2pad_client src/main.cpp)
+target_link_libraries(phone2pad_client PRIVATE client_core)
+target_compile_features(phone2pad_client PRIVATE cxx_std_20)
 if(WIN32)
-    target_compile_definitions(phantompad_client PRIVATE _CRT_SECURE_NO_WARNINGS NOMINMAX)
+    target_compile_definitions(phone2pad_client PRIVATE _CRT_SECURE_NO_WARNINGS NOMINMAX)
 endif()
 
-if(PHANTOMPAD_BUILD_TESTS)
+if(PHONE2PAD_BUILD_TESTS)
     add_subdirectory(tests)
 endif()

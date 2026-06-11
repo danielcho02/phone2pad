@@ -1,8 +1,8 @@
-#include "phantompad/proto/decoder.hpp"
+#include "phone2pad/proto/decoder.hpp"
 
-#include "phantompad/proto/packet.hpp"
+#include "phone2pad/proto/packet.hpp"
 
-namespace phantompad::proto {
+namespace phone2pad::proto {
 namespace {
 
 std::uint16_t read_u16(const std::uint8_t* p) {
@@ -140,4 +140,4 @@ void StreamDecoder::compact() {
     cursor_ = 0;
 }
 
-}  // namespace phantompad::proto
+}  // namespace phone2pad::proto

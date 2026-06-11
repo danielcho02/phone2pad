@@ -4,17 +4,17 @@
 #include <span>
 #include <vector>
 
-#include "phantompad/client/frame_receiver.hpp"
-#include "phantompad/client/sink.hpp"
-#include "phantompad/proto/encoder.hpp"
+#include "phone2pad/client/frame_receiver.hpp"
+#include "phone2pad/client/sink.hpp"
+#include "phone2pad/proto/encoder.hpp"
 #include "test_main.hpp"
 
-using namespace phantompad::client;
-using phantompad::proto::Bytes;
-using phantompad::proto::Contact;
-using phantompad::proto::Hello;
-using phantompad::proto::PingPong;
-using phantompad::proto::TouchFrame;
+using namespace phone2pad::client;
+using phone2pad::proto::Bytes;
+using phone2pad::proto::Contact;
+using phone2pad::proto::Hello;
+using phone2pad::proto::PingPong;
+using phone2pad::proto::TouchFrame;
 
 namespace {
 
@@ -49,10 +49,10 @@ TEST_CASE("dispatches TOUCH_FRAME to the sink and stores HELLO") {
     hello.screenWidthPx = 2400;
     hello.screenHeightPx = 1080;
     hello.maxContacts = 10;
-    const Bytes helloBytes = phantompad::proto::encode(hello);
+    const Bytes helloBytes = phone2pad::proto::encode(hello);
     rx.processBytes(sp(helloBytes));
 
-    const Bytes frameBytes = phantompad::proto::encode(oneContactFrame());
+    const Bytes frameBytes = phone2pad::proto::encode(oneContactFrame());
     rx.processBytes(sp(frameBytes));
 
     CHECK(rx.hello().has_value());
@@ -64,7 +64,7 @@ TEST_CASE("dispatches TOUCH_FRAME to the sink and stores HELLO") {
 TEST_CASE("byte-split feed still yields one frame") {
     CollectingSink sink;
     FrameReceiver rx(sink);
-    const Bytes bytes = phantompad::proto::encode(oneContactFrame());
+    const Bytes bytes = phone2pad::proto::encode(oneContactFrame());
     for (std::uint8_t b : bytes) {
         const std::uint8_t one[1] = {b};
         rx.processBytes(std::span<const std::uint8_t>(one, 1));
@@ -79,7 +79,7 @@ TEST_CASE("PONG produces an RTT sample using the injected clock") {
     PingPong pp;
     pp.seq = 1;
     pp.senderTimestampUs = 1000;
-    const Bytes pong = phantompad::proto::encode_pong(pp);
+    const Bytes pong = phone2pad::proto::encode_pong(pp);
     rx.processBytes(sp(pong));
 
     CHECK_EQ(rx.rttSamplesMs().size(), static_cast<std::size_t>(1));

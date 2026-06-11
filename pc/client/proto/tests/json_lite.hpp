@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-namespace phantompad::json {
+namespace phone2pad::json {
 
 class Value;
 using Array = std::vector<Value>;
@@ -190,4 +190,4 @@ private:
 
 inline Value parse(const std::string& text) { return Parser(text).parse(); }
 
-}  // namespace phantompad::json
+}  // namespace phone2pad::json

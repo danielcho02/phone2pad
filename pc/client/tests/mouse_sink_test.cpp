@@ -1,12 +1,12 @@
 // MouseSink unit tests (docs/05 L2): single-finger move, tap-to-click, tap
 // rejection, and the multi-touch freeze + anchor-reset policy.
 #include "mock_injector.hpp"
-#include "phantompad/client/mouse_sink.hpp"
+#include "phone2pad/client/mouse_sink.hpp"
 #include "test_main.hpp"
 
-using namespace phantompad::client;
-using phantompad::proto::Contact;
-using phantompad::proto::TouchFrame;
+using namespace phone2pad::client;
+using phone2pad::proto::Contact;
+using phone2pad::proto::TouchFrame;
 
 namespace {
 

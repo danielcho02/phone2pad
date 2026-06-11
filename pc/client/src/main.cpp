@@ -1,4 +1,4 @@
-// phantompad_client (Phase A): poll adb for a device, set up the port forward,
+// phone2pad_client (Phase A): poll adb for a device, set up the port forward,
 // launch the phone app, then stream touch frames into MouseSink (relative mouse +
 // tap). On disconnect it re-polls. `--latency-report` prints PING RTT percentiles.
 #include <algorithm>
@@ -11,11 +11,11 @@
 #include <thread>
 #include <vector>
 
-#include "phantompad/client/adb_manager.hpp"
-#include "phantompad/client/frame_receiver.hpp"
-#include "phantompad/client/mouse_sink.hpp"
-#include "phantompad/client/net_client.hpp"
-#include "phantompad/client/win32_input_injector.hpp"
+#include "phone2pad/client/adb_manager.hpp"
+#include "phone2pad/client/frame_receiver.hpp"
+#include "phone2pad/client/mouse_sink.hpp"
+#include "phone2pad/client/net_client.hpp"
+#include "phone2pad/client/win32_input_injector.hpp"
 
 #ifdef _WIN32
 #ifndef WIN32_LEAN_AND_MEAN
@@ -24,7 +24,7 @@
 #include <windows.h>
 #endif
 
-using namespace phantompad::client;
+using namespace phone2pad::client;
 using namespace std::chrono_literals;
 
 namespace {
@@ -61,7 +61,7 @@ void printLatency(const FrameReceiver& receiver) {
 }  // namespace
 
 int main(int argc, char** argv) {
-    std::string package = "com.phantompad";
+    std::string package = "com.phone2pad";
     std::string activity = ".BlackPadActivity";
     int port = 38917;
     double sensitivity = 1.0;
@@ -80,7 +80,7 @@ int main(int argc, char** argv) {
             latencyReport = true;
         } else if (a == "--help") {
             std::printf(
-                "usage: phantompad_client [--package P] [--port N] "
+                "usage: phone2pad_client [--package P] [--port N] "
                 "[--sensitivity F] [--latency-report]\n");
             return 0;
         }
@@ -97,7 +97,7 @@ int main(int argc, char** argv) {
     FrameReceiver receiver(sink);
     AdbManager adb(package, activity, port);
 
-    std::printf("phantompad client: adb=%s port=%d package=%s\n", adb.adbPath().c_str(), port,
+    std::printf("phone2pad client: adb=%s port=%d package=%s\n", adb.adbPath().c_str(), port,
                 package.c_str());
 
     while (!g_stop.load()) {

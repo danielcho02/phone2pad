@@ -1,8 +1,8 @@
-#include "phantompad/proto/encoder.hpp"
+#include "phone2pad/proto/encoder.hpp"
 
-#include "phantompad/proto/packet.hpp"
+#include "phone2pad/proto/packet.hpp"
 
-namespace phantompad::proto {
+namespace phone2pad::proto {
 namespace {
 
 void put_u8(Bytes& out, std::uint8_t v) { out.push_back(v); }
@@ -76,4 +76,4 @@ Bytes encode(const Haptic& haptic) {
     return frame(PacketType::Haptic, payload);
 }
 
-}  // namespace phantompad::proto
+}  // namespace phone2pad::proto

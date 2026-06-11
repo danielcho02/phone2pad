@@ -12,11 +12,11 @@
 #include <vector>
 
 #include "json_lite.hpp"
-#include "phantompad/proto/decoder.hpp"
-#include "phantompad/proto/encoder.hpp"
-#include "phantompad/proto/packet.hpp"
+#include "phone2pad/proto/decoder.hpp"
+#include "phone2pad/proto/encoder.hpp"
+#include "phone2pad/proto/packet.hpp"
 
-namespace phantompad::testsupport {
+namespace phone2pad::testsupport {
 
 namespace fs = std::filesystem;
 using proto::Bytes;
@@ -58,7 +58,7 @@ inline std::string read_file(const fs::path& path) {
 
 inline std::vector<fs::path> vector_files() {
     std::vector<fs::path> files;
-    for (const auto& entry : fs::directory_iterator(PHANTOMPAD_TEST_VECTOR_DIR)) {
+    for (const auto& entry : fs::directory_iterator(PHONE2PAD_TEST_VECTOR_DIR)) {
         if (entry.is_regular_file() && entry.path().extension() == ".json") {
             files.push_back(entry.path());
         }
@@ -164,4 +164,4 @@ inline std::string decoded_mismatch(const proto::DecodedPacket& pkt, const json:
     return "unknown decoded type: " + type;
 }
 
-}  // namespace phantompad::testsupport
+}  // namespace phone2pad::testsupport

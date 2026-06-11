@@ -1,4 +1,4 @@
-#include "phantompad/client/trace.hpp"
+#include "phone2pad/client/trace.hpp"
 
 #include <fstream>
 #include <sstream>
@@ -6,7 +6,7 @@
 
 #include "json_lite.hpp"  // reused from pc/client/proto/tests (header-only)
 
-namespace phantompad::client {
+namespace phone2pad::client {
 
 namespace {
 
@@ -82,4 +82,4 @@ std::string toTraceLine(std::uint32_t t, const proto::TouchFrame& frame) {
     return os.str();
 }
 
-}  // namespace phantompad::client
+}  // namespace phone2pad::client

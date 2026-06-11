@@ -6,13 +6,13 @@
 #include <cstdlib>
 #include <string>
 
-#include "phantompad/client/input_injector.hpp"
-#include "phantompad/client/mouse_sink.hpp"
-#include "phantompad/client/replay.hpp"
-#include "phantompad/client/trace.hpp"
-#include "phantompad/client/win32_input_injector.hpp"
+#include "phone2pad/client/input_injector.hpp"
+#include "phone2pad/client/mouse_sink.hpp"
+#include "phone2pad/client/replay.hpp"
+#include "phone2pad/client/trace.hpp"
+#include "phone2pad/client/win32_input_injector.hpp"
 
-using namespace phantompad::client;
+using namespace phone2pad::client;
 
 namespace {
 

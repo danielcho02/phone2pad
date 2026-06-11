@@ -1,4 +1,4 @@
-#include "phantompad/client/adb_manager.hpp"
+#include "phone2pad/client/adb_manager.hpp"
 
 #include <array>
 #include <cstdio>
@@ -14,7 +14,7 @@
 #define PP_PCLOSE pclose
 #endif
 
-namespace phantompad::client {
+namespace phone2pad::client {
 
 namespace {
 
@@ -90,4 +90,4 @@ bool AdbManager::launchApp(const std::string& serial) const {
     return status(args.str()) == 0;
 }
 
-}  // namespace phantompad::client
+}  // namespace phone2pad::client

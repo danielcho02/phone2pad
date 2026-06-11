@@ -7,6 +7,6 @@ add_library(proto STATIC
 target_include_directories(proto PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_compile_features(proto PUBLIC cxx_std_20)
 
-if(PHANTOMPAD_BUILD_TESTS)
+if(PHONE2PAD_BUILD_TESTS)
     add_subdirectory(tests)
 endif()

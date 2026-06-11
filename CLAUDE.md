@@ -1,7 +1,7 @@
-# CLAUDE.md — PhantomPad 프로젝트 에이전트 지침
+# CLAUDE.md — phone2pad 프로젝트 에이전트 지침
 
 > 이 파일은 Claude Code 및 모든 코딩 에이전트가 작업 전 반드시 읽어야 하는 루트 지침이다.
-> 프로젝트 이름 `PhantomPad`는 placeholder이며 변경 가능하다.
+> 프로젝트 공식 이름은 `phone2pad`다.
 
 ## 1. 프로젝트 한 줄 정의
 
@@ -49,7 +49,7 @@
 ## 5. 레포 구조
 
 ```
-phantompad/
+phone2pad/
 ├── CLAUDE.md                 ← 이 파일
 ├── docs/                     ← 설계 문서 (SSOT)
 ├── prompts/                  ← Phase별 Claude Code 시작 프롬프트

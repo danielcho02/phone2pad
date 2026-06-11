@@ -7,12 +7,12 @@
     <application
         android:allowBackup="false"
         android:icon="@android:drawable/ic_menu_view"
-        android:label="PhantomPad"
+        android:label="phone2pad"
         android:supportsRtl="false"
-        android:theme="@style/Theme.PhantomPad.Black">
+        android:theme="@style/Theme.phone2pad.Black">
 
         <!-- Landscape "pad" Activity. Exported so the PC client can launch it via
-             `adb shell am start -n com.phantompad/.BlackPadActivity`. -->
+             `adb shell am start -n com.phone2pad/.BlackPadActivity`. -->
         <activity
             android:name=".BlackPadActivity"
             android:exported="true"

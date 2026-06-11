@@ -16,7 +16,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "phantompad"
+rootProject.name = "phone2pad"
 
 include(":proto")
 include(":app")

@@ -8,11 +8,11 @@
 #include <string>
 #include <thread>
 
-#include "phantompad/client/adb_manager.hpp"
-#include "phantompad/client/frame_receiver.hpp"
-#include "phantompad/client/net_client.hpp"
-#include "phantompad/client/sink.hpp"
-#include "phantompad/client/trace.hpp"
+#include "phone2pad/client/adb_manager.hpp"
+#include "phone2pad/client/frame_receiver.hpp"
+#include "phone2pad/client/net_client.hpp"
+#include "phone2pad/client/sink.hpp"
+#include "phone2pad/client/trace.hpp"
 
 #ifdef _WIN32
 #ifndef WIN32_LEAN_AND_MEAN
@@ -21,7 +21,7 @@
 #include <windows.h>
 #endif
 
-using namespace phantompad::client;
+using namespace phone2pad::client;
 using namespace std::chrono_literals;
 
 namespace {
@@ -45,7 +45,7 @@ public:
     bool ok() const { return static_cast<bool>(out_); }
     std::size_t count() const { return count_; }
 
-    void onFrame(const phantompad::proto::TouchFrame& frame) override {
+    void onFrame(const phone2pad::proto::TouchFrame& frame) override {
         out_ << toTraceLine(frame.timestampUs, frame) << '\n';
         out_.flush();
         ++count_;
@@ -60,7 +60,7 @@ private:
 
 int main(int argc, char** argv) {
     std::string outPath;
-    std::string package = "com.phantompad";
+    std::string package = "com.phone2pad";
     int port = 38917;
 
     for (int i = 1; i < argc; ++i) {

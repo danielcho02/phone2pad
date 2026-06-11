@@ -1,4 +1,4 @@
-#include "phantompad/client/net_client.hpp"
+#include "phone2pad/client/net_client.hpp"
 
 #ifdef _WIN32
 
@@ -15,7 +15,7 @@
 
 #pragma comment(lib, "ws2_32.lib")
 
-namespace phantompad::client {
+namespace phone2pad::client {
 
 namespace {
 
@@ -104,6 +104,6 @@ bool runClientConnection(FrameReceiver& receiver, int port, std::atomic<bool>& s
     return connected;
 }
 
-}  // namespace phantompad::client
+}  // namespace phone2pad::client
 
 #endif  // _WIN32

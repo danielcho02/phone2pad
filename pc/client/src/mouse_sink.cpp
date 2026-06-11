@@ -1,10 +1,10 @@
-#include "phantompad/client/mouse_sink.hpp"
+#include "phone2pad/client/mouse_sink.hpp"
 
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>
 
-namespace phantompad::client {
+namespace phone2pad::client {
 
 MouseSink::MouseSink(InputInjector& injector, MouseSinkConfig config)
     : inj_(injector), cfg_(config) {}
@@ -76,4 +76,4 @@ void MouseSink::endContactAsTap(std::uint32_t tsUs) {
     }
 }
 
-}  // namespace phantompad::client
+}  // namespace phone2pad::client

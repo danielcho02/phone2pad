@@ -1,12 +1,12 @@
-#include "phantompad/client/frame_receiver.hpp"
+#include "phone2pad/client/frame_receiver.hpp"
 
 #include <chrono>
 #include <variant>
 
-#include "phantompad/proto/ping_pong.hpp"
-#include "phantompad/proto/touch_frame.hpp"
+#include "phone2pad/proto/ping_pong.hpp"
+#include "phone2pad/proto/touch_frame.hpp"
 
-namespace phantompad::client {
+namespace phone2pad::client {
 
 namespace {
 
@@ -46,4 +46,4 @@ proto::Bytes FrameReceiver::makePing() {
     return proto::encode_ping(ping);
 }
 
-}  // namespace phantompad::client
+}  // namespace phone2pad::client

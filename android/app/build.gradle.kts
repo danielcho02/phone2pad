@@ -1,4 +1,4 @@
-// :app — the PhantomPad phone-side sensor app (Phase A).
+// :app — the phone2pad phone-side sensor app (Phase A).
 // Black, full-screen, landscape "pad" Activity that streams raw multitouch to the
 // PC over TCP :38917. Reuses the wire protocol from :proto (no re-implementation).
 plugins {
@@ -7,13 +7,13 @@ plugins {
 }
 
 android {
-    namespace = "com.phantompad"
+    namespace = "com.phone2pad"
     // Built against the installed android-36.1 platform; AGP resolves 36 to the
     // highest installed 36.x. minSdk 28 per docs/06.
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.phantompad"
+        applicationId = "com.phone2pad"
         minSdk = 28
         targetSdk = 36
         versionCode = 1

@@ -1,9 +1,9 @@
-#include "phantompad/client/replay.hpp"
+#include "phone2pad/client/replay.hpp"
 
 #include <chrono>
 #include <thread>
 
-namespace phantompad::client {
+namespace phone2pad::client {
 
 void realSleepMicros(std::uint32_t micros) {
     if (micros != 0) std::this_thread::sleep_for(std::chrono::microseconds(micros));
@@ -26,4 +26,4 @@ void replayFrames(const std::vector<TimedFrame>& frames, Sink& sink, double spee
     }
 }
 
-}  // namespace phantompad::client
+}  // namespace phone2pad::client

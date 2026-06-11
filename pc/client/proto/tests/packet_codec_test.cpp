@@ -1,17 +1,17 @@
 // Round-trip tests for single-packet vectors (packet_hex + decoded). Emits main()
-// for the whole proto_tests executable (PHANTOMPAD_TEST_MAIN).
-#define PHANTOMPAD_TEST_MAIN
+// for the whole proto_tests executable (PHONE2PAD_TEST_MAIN).
+#define PHONE2PAD_TEST_MAIN
 #include "test_main.hpp"
 
 #include <span>
 #include <string>
 
 #include "json_lite.hpp"
-#include "phantompad/proto/decoder.hpp"
+#include "phone2pad/proto/decoder.hpp"
 #include "vector_support.hpp"
 
-using namespace phantompad;
-namespace ts = phantompad::testsupport;
+using namespace phone2pad;
+namespace ts = phone2pad::testsupport;
 
 TEST_CASE("single-packet vectors: decode(hex) == decoded, encode(decoded) == hex") {
     int checked = 0;

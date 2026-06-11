@@ -12,7 +12,7 @@ target_compile_features(proto_tests PRIVATE cxx_std_20)
 # relative to this file: pc/client/proto/tests -> repo root -> proto/test-vectors).
 get_filename_component(_repo_root "${CMAKE_CURRENT_SOURCE_DIR}/../../../.." ABSOLUTE)
 target_compile_definitions(proto_tests PRIVATE
-    "PHANTOMPAD_TEST_VECTOR_DIR=\"${_repo_root}/proto/test-vectors\""
+    "PHONE2PAD_TEST_VECTOR_DIR=\"${_repo_root}/proto/test-vectors\""
 )
 
 add_test(NAME proto_tests COMMAND proto_tests)

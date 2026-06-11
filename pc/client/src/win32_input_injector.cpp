@@ -1,4 +1,4 @@
-#include "phantompad/client/win32_input_injector.hpp"
+#include "phone2pad/client/win32_input_injector.hpp"
 
 #ifdef _WIN32
 
@@ -7,7 +7,7 @@
 #endif
 #include <windows.h>
 
-namespace phantompad::client {
+namespace phone2pad::client {
 
 namespace {
 
@@ -38,6 +38,6 @@ void Win32InputInjector::leftUp() {
     sendMouse(MOUSEEVENTF_LEFTUP, 0, 0);
 }
 
-}  // namespace phantompad::client
+}  // namespace phone2pad::client
 
 #endif  // _WIN32

@@ -3,6 +3,8 @@
 add_executable(client_tests
     test_entry.cpp
     mouse_sink_test.cpp
+    gesture_sink_test.cpp
+    gesture_router_test.cpp
     frame_receiver_test.cpp
     trace_replay_test.cpp
 )

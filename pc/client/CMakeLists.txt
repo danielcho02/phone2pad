@@ -6,6 +6,8 @@ add_subdirectory(proto)
 add_library(client_core STATIC
     src/frame_receiver.cpp
     src/mouse_sink.cpp
+    src/gesture_sink.cpp
+    src/gesture_router.cpp
     src/adb_manager.cpp
     src/net_client.cpp
     src/trace.cpp

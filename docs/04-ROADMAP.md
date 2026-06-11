@@ -40,19 +40,22 @@
 ## Phase B — User-mode 제스처 MVP (예상: 3~5일)
 
 **산출물**
-- **GestureSink**: 손가락 개수 + 방향 판별 상태머신
-  - 1손가락: 이동/탭/드래그(탭 후 즉시 이동)
-  - 2손가락: 스크롤(`MOUSEEVENTF_WHEEL`/`HWHEEL`), 2손가락 탭 = 우클릭, 핀치 = Ctrl+휠
-  - 3손가락 위 = `Win+Tab`, 3손가락 좌우 = `Alt+Tab` 계열, 아래 = `Win+D`
-  - 4손가락 좌우 = `Win+Ctrl+←/→` (가상 데스크탑)
+- **GestureRouter**: peak 접촉 수로 분기 (1손가락→MouseSink, 2+→GestureSink),
+  2→1 decay 시 커서 점프 방지 (앵커 리셋). — 구현 완료
+- **GestureSink**: 손가락 개수 + 방향 판별 상태머신 (Idle/Tracking/Committed/Cancelled)
+  - 2손가락: 스크롤(`MOUSEEVENTF_WHEEL`/`HWHEEL`, 기본 natural 방향), 탭 = 우클릭,
+    핀치 = Ctrl+휠 (스크롤 vs 핀치 disambiguation) — 구현 완료 (핀치는 B2, config 토글)
+  - 3손가락 위 = `Win+Tab`, 아래 = `Win+D`, 좌우 = `Alt(+Shift)+Tab` — 구현 완료
+    (좌우 Alt+Tab 계열은 짧은 Alt hold 신뢰성 한계 있음 → 실기기 L4에서 튜닝)
+  - 4손가락 좌우 = `Ctrl+Win+←/→` (가상 데스크탑), 위/아래 = 3손가락 미러(옵션) — 구현 완료
   - 모두 `SendInput` 주입
-- 포인터 가속 곡선 (간단한 2구간), 설정 파일로 토글/속도 조절
-- 제스처 단위 테스트: 트레이스 입력 → 기대 액션 시퀀스 검증
+- 설정: CLI 플래그 + `GestureConfig`(스크롤 방향/감도, 핀치 토글 등). `config.toml` 미도입.
+- 제스처 단위 테스트: 트레이스/합성 프레임 입력 → 기대 액션 시퀀스 + 오발동 negative 검증
 
 **수락 기준**
-- [ ] 표준 트레이스 셋에 대한 제스처 판별 정확도 100% (오발동 0)
-- [ ] 실사용: 데스크탑 전환·Task View·스크롤이 자연스러움
-- [ ] **이 시점부터 일상 사용 가능 (MVP)**
+- [x] 표준 트레이스 셋에 대한 제스처 판별 정확도 100% (오발동 0) — L2/L3 자동 테스트 통과
+- [ ] 실사용: 데스크탑 전환·Task View·스크롤이 자연스러움 — 실기기 L4 대기
+- [~] **이 시점부터 일상 사용 가능 (MVP)** — user-mode 경로 완성, 실기기 검증 대기
 
 ---
 

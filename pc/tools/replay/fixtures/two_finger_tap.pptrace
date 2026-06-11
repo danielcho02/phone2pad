@@ -1,0 +1,5 @@
+# Two fingers down briefly and nearly stationary, then lifted -> 2-finger tap =
+# right click. Short duration (<180ms) and tiny travel (<12px) so it is not a scroll.
+{"t": 0,     "contacts": [{"id":0,"tip":1,"x":200,"y":300}, {"id":1,"tip":1,"x":400,"y":300}]}
+{"t": 20000, "contacts": [{"id":0,"tip":1,"x":201,"y":300}, {"id":1,"tip":1,"x":400,"y":301}]}
+{"t": 40000, "contacts": [{"id":0,"tip":0,"x":201,"y":300}, {"id":1,"tip":0,"x":400,"y":301}]}

@@ -11,6 +11,12 @@ public:
     void moveRelative(int dx, int dy) override;
     void leftDown() override;
     void leftUp() override;
+    void rightDown() override;
+    void rightUp() override;
+    void wheel(int delta) override;
+    void hwheel(int delta) override;
+    void keyDown(int vk) override;
+    void keyUp(int vk) override;
 };
 
 }  // namespace phone2pad::client

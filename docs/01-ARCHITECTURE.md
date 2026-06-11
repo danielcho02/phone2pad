@@ -45,9 +45,22 @@
 - ADB 수명주기 관리: `adb devices` 폴링 → 연결 감지 시
   `adb forward tcp:38917 tcp:38917` + `adb shell am start -n <pkg>/.BlackPadActivity`
 - `FrameReceiver`: 길이-프리픽스 패킷 스트림 파싱 (`02-PROTOCOL.md`)
-- `Sink` 인터페이스: `void consume(const TouchFrame&)`
+- `Sink` 인터페이스: `void onFrame(const TouchFrame&)`
   - Phase 전환 = Sink 구현 교체. 수신/파싱 코드는 전 Phase 공유.
-- 설정 파일(`config.toml`): 포인터 속도, 스크롤 방향, 패키지명 등
+- **Phase B 제스처 합성** (`GestureRouter` → `MouseSink` / `GestureSink`):
+  - 최상위 Sink는 `GestureRouter`. 한 터치 세션의 **peak 접촉 수**로 분기한다:
+    1손가락은 `MouseSink`(Phase A 상대 마우스, 무수정), 2+손가락은 `GestureSink`.
+  - 2+가 한 번이라도 관측되면 전손가락 lift까지 그 세션을 GestureSink로 고정한다
+    (peak-latch: 세션 중 강등 없음). 진입 시 첫 멀티터치 프레임을 MouseSink에 1회
+    전달해 이동 앵커를 리셋 → 2→1손가락 decay에서 커서 점프 방지.
+  - `GestureSink` 상태머신: `Idle → Tracking(2/3/4) → Committed/Cancelled`.
+    - 2손가락: 스크롤(`wheel`/`hwheel`), 탭=우클릭, 핀치=Ctrl+휠.
+      스크롤 vs 핀치는 중심점 이동량 vs 손가락 간 거리 변화로 disambiguation 후 확정.
+    - 3손가락: ↑=Win+Tab, ↓=Win+D, ←/→=Alt(+Shift)+Tab.
+    - 4손가락: ←/→=Ctrl+Win+←/→(가상 데스크탑), ↑/↓=3손가락 미러(옵션).
+    - 모두 `SendInput` 주입. 폰은 여전히 raw 센서 — 제스처 판별은 전부 PC에서.
+- 설정: Phase A/B 모두 CLI 플래그 + 기본값 구조체(`MouseSinkConfig`/`GestureConfig`).
+  (`config.toml` 파서는 미도입 — 추후 과제.)
 
 ### 2.3 가상 HID 드라이버 (`pc/driver/`, Phase C)
 - KMDF + **Virtual HID Framework (VHF)** — MS 권장 가상 HID 생성 경로

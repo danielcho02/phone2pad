@@ -68,8 +68,9 @@ phone2pad/
 ## 6. 현재 상태
 
 - [x] Phase 0: 레포 부트스트랩, 프로토콜 라이브러리 + 테스트 벡터
-- [ ] Phase A: 폰 → PC 좌표 전송, 상대좌표 마우스 (SendInput)
-- [ ] Phase B: user-mode 제스처 판별 + 단축키 주입 (사용 가능한 MVP)
+- [x] Phase A: 폰 → PC 좌표 전송, 상대좌표 마우스 (SendInput) — 실기기 L4 검증만 잔여
+- [~] Phase B: user-mode 제스처 (GestureRouter + GestureSink) — 스크롤/우클릭/핀치/
+      3·4손가락 스와이프 구현 + L2/L3 자동 테스트 통과, 실기기 L4 검증 대기
 - [ ] Phase C: PTP 가상 HID 드라이버 (네이티브 트랙패드 인식)
 - [ ] Phase D: 폴리시 — 팜 리젝션, 햅틱, 전력 최적화
 

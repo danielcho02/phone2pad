@@ -13,6 +13,8 @@
 
 #include "phone2pad/client/adb_manager.hpp"
 #include "phone2pad/client/frame_receiver.hpp"
+#include "phone2pad/client/gesture_router.hpp"
+#include "phone2pad/client/gesture_sink.hpp"
 #include "phone2pad/client/mouse_sink.hpp"
 #include "phone2pad/client/net_client.hpp"
 #include "phone2pad/client/win32_input_injector.hpp"
@@ -66,6 +68,7 @@ int main(int argc, char** argv) {
     int port = 38917;
     double sensitivity = 1.0;
     bool latencyReport = false;
+    GestureConfig gcfg;
 
     for (int i = 1; i < argc; ++i) {
         const std::string a = argv[i];
@@ -76,12 +79,19 @@ int main(int argc, char** argv) {
             port = std::atoi(next().c_str());
         } else if (a == "--sensitivity") {
             sensitivity = std::atof(next().c_str());
+        } else if (a == "--scroll-traditional") {
+            gcfg.naturalScroll = false;
+        } else if (a == "--scroll-sensitivity") {
+            gcfg.scrollPixelsPerNotch = std::atoi(next().c_str());
+        } else if (a == "--no-pinch") {
+            gcfg.enablePinch = false;
         } else if (a == "--latency-report") {
             latencyReport = true;
         } else if (a == "--help") {
             std::printf(
-                "usage: phone2pad_client [--package P] [--port N] "
-                "[--sensitivity F] [--latency-report]\n");
+                "usage: phone2pad_client [--package P] [--port N] [--sensitivity F] "
+                "[--scroll-traditional] [--scroll-sensitivity PX] [--no-pinch] "
+                "[--latency-report]\n");
             return 0;
         }
     }
@@ -93,8 +103,10 @@ int main(int argc, char** argv) {
     Win32InputInjector injector;
     MouseSinkConfig cfg;
     cfg.sensitivity = sensitivity;
-    MouseSink sink(injector, cfg);
-    FrameReceiver receiver(sink);
+    MouseSink mouse(injector, cfg);
+    GestureSink gesture(injector, gcfg);
+    GestureRouter router(mouse, gesture);  // 1 finger -> mouse, 2+ -> gestures
+    FrameReceiver receiver(router);
     AdbManager adb(package, activity, port);
 
     std::printf("phone2pad client: adb=%s port=%d package=%s\n", adb.adbPath().c_str(), port,

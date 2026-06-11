@@ -1,0 +1,9 @@
+# Three fingers (ids 0,1,2) swiping up (y decreasing) past the commit threshold
+# (centroid travel > 80px). GestureSink -> Win+Tab (Task View). Fires once per
+# session. Used by L2/L3 gesture tests.
+{"t": 0,      "contacts": [{"id":0,"tip":1,"x":200,"y":300}, {"id":1,"tip":1,"x":300,"y":300}, {"id":2,"tip":1,"x":400,"y":300}]}
+{"t": 8333,   "contacts": [{"id":0,"tip":1,"x":200,"y":270}, {"id":1,"tip":1,"x":300,"y":270}, {"id":2,"tip":1,"x":400,"y":270}]}
+{"t": 16666,  "contacts": [{"id":0,"tip":1,"x":200,"y":230}, {"id":1,"tip":1,"x":300,"y":230}, {"id":2,"tip":1,"x":400,"y":230}]}
+{"t": 25000,  "contacts": [{"id":0,"tip":1,"x":200,"y":190}, {"id":1,"tip":1,"x":300,"y":190}, {"id":2,"tip":1,"x":400,"y":190}]}
+{"t": 33333,  "contacts": [{"id":0,"tip":1,"x":200,"y":160}, {"id":1,"tip":1,"x":300,"y":160}, {"id":2,"tip":1,"x":400,"y":160}]}
+{"t": 41666,  "contacts": [{"id":0,"tip":0,"x":200,"y":160}, {"id":1,"tip":0,"x":300,"y":160}, {"id":2,"tip":0,"x":400,"y":160}]}

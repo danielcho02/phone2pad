@@ -73,7 +73,13 @@ phone2pad/
         PC client(AdbManager/FrameReceiver/MouseSink), replay/recorder 도구
       - 자동 테스트 통과: proto(L1) + client/replay(L2/L3), :app:assembleDebug
       - 실기기 검증(L4) 대기: 콜드스타트·탭/더블탭·RTT p95<5ms·표준 트레이스 5종 녹화
-- [ ] Phase B: user-mode 제스처 판별 + 단축키 주입 (사용 가능한 MVP)
+- [~] Phase B: user-mode 제스처 판별 + 단축키 주입 (사용 가능한 MVP)
+      - 구현 완료: GestureRouter(1손가락→MouseSink, 2+→GestureSink, peak-latch),
+        GestureSink(2손가락 스크롤/우클릭/핀치, 3·4손가락 스와이프 → SendInput),
+        InputInjector 확장(wheel/hwheel/right/key), replay `--sink gesture`
+      - 자동 테스트 통과: gesture_sink/gesture_router L2 + 합성 fixture L3 (오발동 0),
+        기존 Phase A·proto 회귀 유지
+      - 실기기 검증(L4) 대기: 실사용 자연스러움, 3손가락 Alt+Tab 신뢰성 튜닝
 - [ ] Phase C: PTP 가상 HID 드라이버 (네이티브 트랙패드 인식)
 - [ ] Phase D: 폴리시 — 팜 리젝션, 햅틱, 전력 최적화
 

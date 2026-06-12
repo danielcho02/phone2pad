@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Adaptive launcher icon background. White so the black phone2pad logo reads. -->
+<resources>
+    <color name="ic_launcher_background">#FFFFFFFF</color>
+</resources>

@@ -1,0 +1,5 @@
+// Resource script for phone2pad_tray.exe. Embeds the app/tray icon so it shows in
+// Explorer, the taskbar, and the system tray. The path is relative to this .rc file.
+#include "tray_resource.h"
+
+IDI_PHONE2PAD ICON "assets/phone2pad.ico"

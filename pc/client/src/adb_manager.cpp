@@ -7,17 +7,15 @@
 #include <filesystem>
 #include <sstream>
 
+#include "phone2pad/client/process_runner.hpp"
+
 #ifdef _WIN32
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
 #include <windows.h>
-#define PP_POPEN _popen
-#define PP_PCLOSE _pclose
 constexpr char kPathSep = ';';
 #else
-#define PP_POPEN popen
-#define PP_PCLOSE pclose
 constexpr char kPathSep = ':';
 #endif
 
@@ -130,24 +128,16 @@ std::optional<AdbCandidate> AdbManager::locateAdb(const AdbEnv& env) {
     return std::nullopt;
 }
 
+// All adb invocation goes through runHidden() so the child is launched with no
+// window and never steals foreground focus (critical when the GUI-subsystem tray is
+// the caller — see process_runner.hpp). A conservative timeout keeps a stuck adb from
+// hanging the ClientService worker thread.
 std::string AdbManager::capture(const std::string& args) const {
-    std::ostringstream cmd;
-    cmd << '"' << adb_ << "\" " << args;
-    FILE* pipe = PP_POPEN(cmd.str().c_str(), "r");
-    if (pipe == nullptr) return {};
-    std::string out;
-    std::array<char, 512> buf{};
-    while (std::fgets(buf.data(), static_cast<int>(buf.size()), pipe) != nullptr) {
-        out += buf.data();
-    }
-    PP_PCLOSE(pipe);
-    return out;
+    return runHidden(adb_, args, /*captureOutput=*/true).output;
 }
 
 int AdbManager::status(const std::string& args) const {
-    std::ostringstream cmd;
-    cmd << '"' << adb_ << "\" " << args;
-    return std::system(cmd.str().c_str());
+    return runHidden(adb_, args, /*captureOutput=*/false).exitCode;
 }
 
 std::vector<AdbDevice> AdbManager::parseDevices(const std::string& devicesOutput) {

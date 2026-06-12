@@ -96,6 +96,30 @@ phone2pad/
         - 자동 검증: test-all.ps1 회귀 유지, package-release dry-run으로 self-contained
           zip 생성(client는 시스템 DLL만 의존), keystore 없으면 Android asset SKIP
         - 대기(사용자): GitHub Release v0.2.0 게시, Google Play Internal testing 업로드
+      - [~] v0.3.0 실행 마찰 감소 UX (트레이 companion) — D-2 "연결 UX(트레이 아이콘)" 충족
+        - 구현 완료: `phone2pad_tray.exe`(네이티브 Win32, GUI 서브시스템·콘솔 없음) —
+          Shell_NotifyIcon + 컨텍스트 메뉴(상태/Start·Stop/Open setup guide/Start with
+          Windows/Exit), 단일 인스턴스(named mutex), 상태 풍선(Idle/Waiting for phone/
+          Waiting for app/Connected). 자동 시작은 `HKCU\...\Run`(관리자 불필요).
+        - 공유 엔진 `ClientService`(client_core): CLI/트레이가 동일 파이프라인 재사용.
+          유휴 저전력 tiered 루프(monitor→arm→active) — 보수적 폴링, Connected에서만 입력
+          파이프라인 활성. `net_client`에 onFirstData 콜백 추가(세션 시작 즉시 Connected 표시).
+        - L4 핫픽스: 트레이(GUI) 모드에서 adb 폴링이 콘솔 창을 띄워 창 깜빡임·키보드 포커스
+          탈취를 일으키던 문제 수정 — `process_runner`(CreateProcessW + CREATE_NO_WINDOW +
+          SW_HIDE + 파이프 캡처 + ~10s 타임아웃)로 AdbManager의 `_popen`/`std::system` 교체.
+        - L4 UX: phone2pad 로고를 exe/트레이/풍선 아이콘으로 임베드(`tray.rc` +
+          `assets/phone2pad.ico`, `scripts/make-icon.ps1`로 생성), 트레이 문구를 한국어로
+          개선(툴팁 항상 `phone2pad - …`, 상태/메뉴/풍선 한국어), 숨겨진 아이콘(^) 영역 안내를
+          README/QUICKSTART/windows-README에 추가. 트레이 Korean 리터럴용 `/utf-8` 적용.
+        - L4 아이콘 폴리시: 트레이/exe 아이콘을 투명 배경 + 밝은 외곽선으로 재생성(다크
+          작업표시줄 가시성, 흰 사각형 해결). Android 런처 아이콘 추가(adaptive + 레거시 PNG,
+          매니페스트 `icon`/`roundIcon` 연결) — `scripts/make-android-icons.ps1`.
+        - 콘솔 `phone2pad_client.exe`는 동일 동작 대체 경로로 유지(ClientService 위로 재작성).
+        - 자동 테스트 통과: client_service(상태/shortLabel/describe·start/stop) + autostart
+          포맷팅 단위 테스트 추가, 기존 회귀 유지(76 cases, 0 failures).
+        - 배포: package-release가 트레이 exe + QUICKSTART.md 동봉, 트레이를 권장 진입점으로
+          안내(README/QUICKSTART). Android versionCode 5 / versionName 0.3.0(동작 무변경).
+        - 실기기 검증(L4) 대기: 트레이 상태 전환 체감, 자동 시작 재부팅 검증, 유휴 CPU 확인.
       - [ ] D-2 폴리시 — 팜 리젝션, 햅틱, 전력 최적화 (이후)
 
 작업 시작 전 이 체크리스트를 갱신하고, Phase 완료 시 체크 표시 후 커밋하라.

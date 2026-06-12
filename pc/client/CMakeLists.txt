@@ -10,7 +10,10 @@ add_library(client_core STATIC
     src/gesture_router.cpp
     src/orientation_normalizer.cpp
     src/adb_manager.cpp
+    src/process_runner.cpp
     src/net_client.cpp
+    src/client_service.cpp
+    src/autostart.cpp
     src/trace.cpp
     src/replay.cpp
     src/win32_input_injector.cpp
@@ -34,6 +37,26 @@ target_link_libraries(phone2pad_client PRIVATE client_core)
 target_compile_features(phone2pad_client PRIVATE cxx_std_20)
 if(WIN32)
     target_compile_definitions(phone2pad_client PRIVATE _CRT_SECURE_NO_WARNINGS NOMINMAX)
+endif()
+
+# phone2pad_tray: the v0.3.0 background/tray companion (Windows-only). GUI subsystem
+# (WIN32) so it runs with no console window. Drives the same client_core pipeline and
+# adds Shell_NotifyIcon UI + HKCU autostart (shell32/advapi32 are system libs, so the
+# release zip stays self-contained).
+if(WIN32)
+    # tray.rc embeds assets/phone2pad.ico as the app/tray icon (VS generator compiles
+    # the .rc automatically; rc.exe resolves the icon path relative to the .rc file).
+    add_executable(phone2pad_tray WIN32 src/tray_main.cpp tray.rc)
+    target_link_libraries(phone2pad_tray PRIVATE client_core shell32 advapi32)
+    # tray_resource.h lives in this dir (shared by tray_main.cpp and tray.rc).
+    target_include_directories(phone2pad_tray PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+    target_compile_features(phone2pad_tray PRIVATE cxx_std_20)
+    target_compile_definitions(phone2pad_tray PRIVATE _CRT_SECURE_NO_WARNINGS NOMINMAX)
+    if(MSVC)
+        # The sources are UTF-8; tell MSVC so the tray's Korean wide-string literals
+        # decode correctly (otherwise cp949 is assumed — see the C4819 warnings).
+        target_compile_options(phone2pad_tray PRIVATE /utf-8)
+    endif()
 endif()
 
 if(PHONE2PAD_BUILD_TESTS)

@@ -14,7 +14,7 @@
 
 [CmdletBinding()]
 param(
-    [string]$Version = '0.2.0',
+    [string]$Version = '0.3.0',
     [switch]$SkipAndroid
 )
 
@@ -62,6 +62,7 @@ if (-not $cmake) {
 Write-Host "`n=== Stage 2: Windows zip ===" -ForegroundColor Cyan
 if ($results['pc'] -eq 'PASS') {
     $exes = @{
+        'phone2pad_tray.exe'   = Join-Path $buildDir 'client\Release\phone2pad_tray.exe'
         'phone2pad_client.exe' = Join-Path $buildDir 'client\Release\phone2pad_client.exe'
         'recorder.exe'         = Join-Path $buildDir 'tools\recorder\Release\recorder.exe'
         'replay.exe'           = Join-Path $buildDir 'tools\replay\Release\replay.exe'
@@ -90,6 +91,15 @@ if ($results['pc'] -eq 'PASS') {
         Copy-Item $license (Join-Path $stageDir 'LICENSE') -Force
     } else {
         Write-Warning "LICENSE not found at repo root; zip will omit it."
+    }
+
+    # Ship QUICKSTART.md next to the exes so the tray's "Open setup guide" resolves
+    # locally (it falls back to the GitHub copy when absent).
+    $quickstart = Join-Path $repoRoot 'QUICKSTART.md'
+    if (Test-Path $quickstart) {
+        Copy-Item $quickstart (Join-Path $stageDir 'QUICKSTART.md') -Force
+    } else {
+        Write-Warning "QUICKSTART.md not found at repo root; zip will omit it."
     }
 
     if ($stageOk) {

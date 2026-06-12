@@ -44,8 +44,10 @@ bool sendAll(SOCKET s, const std::uint8_t* data, std::size_t n) {
 }  // namespace
 
 bool runClientConnection(FrameReceiver& receiver, int port, std::atomic<bool>& stop,
-                         int pingIntervalMs, bool* receivedData) {
+                         int pingIntervalMs, bool* receivedData,
+                         std::function<void()> onFirstData) {
     if (receivedData != nullptr) *receivedData = false;
+    bool firstData = false;
 
     WsaScope wsa;
     if (!wsa.ok) return false;
@@ -81,6 +83,10 @@ bool runClientConnection(FrameReceiver& receiver, int port, std::atomic<bool>& s
                            static_cast<int>(buf.size()), 0);
         if (n > 0) {
             if (receivedData != nullptr) *receivedData = true;
+            if (!firstData) {
+                firstData = true;
+                if (onFirstData) onFirstData();
+            }
             receiver.processBytes(std::span<const std::uint8_t>(buf.data(),
                                                                 static_cast<std::size_t>(n)));
         } else if (n == 0) {

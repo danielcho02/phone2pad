@@ -9,6 +9,9 @@ add_executable(client_tests
     trace_replay_test.cpp
     orientation_test.cpp
     adb_manager_test.cpp
+    client_service_test.cpp
+    autostart_test.cpp
+    process_runner_test.cpp
 )
 
 target_link_libraries(client_tests PRIVATE client_core)

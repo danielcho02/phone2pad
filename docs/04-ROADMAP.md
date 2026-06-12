@@ -13,8 +13,10 @@ Phase 계획과 별개로, 배포 버전은 아래 트랙을 따른다.
   수정, 가로/역가로 방향 정규화, 패드 모드 시스템 UI 폴리시(종료 힌트·밝기 전환).
   프로토콜·제스처 동작은 그대로 유지.
 - **v0.3.0 — 실행 마찰 감소 UX.** 매번 Windows exe를 수동으로 실행할 필요가 없도록
-  백그라운드 / 트레이 / 자동 시작(autostart) 형태의 UX 도입. *(계획 단계, 미구현)*
-  Phase D-2의 "연결 UX(트레이 아이콘·auto-launch 재검토)" 항목과 연결된다.
+  백그라운드 / 트레이 / 자동 시작(autostart) 형태의 UX 도입. *(구현 완료, 실기기 L4 대기)*
+  네이티브 Win32 트레이 companion(`phone2pad_tray.exe`) + `HKCU\...\Run` 자동 시작 +
+  공유 `ClientService`(유휴 저전력 tiered 루프) 추가. 콘솔 `phone2pad_client.exe`는 대체
+  경로로 유지. 프로토콜·Android 동작 무변경. Phase D-2의 "연결 UX(트레이 아이콘)" 항목 충족.
 - **v0.4.0+ — 전송/입력 모드 리서치.** Wi-Fi/Bluetooth 전송(비목표였던 무선 경로 재검토),
   네이티브 Precision Touchpad 드라이버(Phase C), 또는 주요 입력 모드 변경에 대한 리서치.
 

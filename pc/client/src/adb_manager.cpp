@@ -53,10 +53,11 @@ std::string sdkAdb(const std::string& root) {
     return (fs::path(root) / "platform-tools" / "adb.exe").string();
 }
 
-// adb.exe under <base>/tools/platform-tools/adb.exe (app-local layout).
+// adb.exe under <base>/platform-tools/adb.exe (app-local drop-in: unzip the official
+// platform-tools next to the exe). Matches the layout documented in ADB-SETUP.md.
 std::string localToolsAdb(const std::string& base) {
     namespace fs = std::filesystem;
-    return (fs::path(base) / "tools" / "platform-tools" / "adb.exe").string();
+    return (fs::path(base) / "platform-tools" / "adb.exe").string();
 }
 
 }  // namespace
@@ -108,13 +109,13 @@ std::vector<AdbCandidate> AdbManager::adbCandidatePaths(const AdbEnv& env) {
     if (!env.androidHome.empty()) out.push_back({sdkAdb(env.androidHome), "Android SDK"});
     if (!env.androidSdkRoot.empty()) out.push_back({sdkAdb(env.androidSdkRoot), "Android SDK"});
 
-    // 3) App-local tools\platform-tools (relative to the working directory).
+    // 3) App-local platform-tools (relative to the working directory).
     if (!env.cwd.empty()) {
-        out.push_back({localToolsAdb(env.cwd), "tools\\platform-tools next to the app"});
+        out.push_back({localToolsAdb(env.cwd), "platform-tools next to the app"});
     }
-    // 4) Executable-relative tools\platform-tools.
+    // 4) Executable-relative platform-tools.
     if (!env.exeDir.empty() && env.exeDir != env.cwd) {
-        out.push_back({localToolsAdb(env.exeDir), "tools\\platform-tools next to the app"});
+        out.push_back({localToolsAdb(env.exeDir), "platform-tools next to the app"});
     }
     return out;
 }

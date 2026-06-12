@@ -8,14 +8,18 @@ USB-C로 연결한 Android 폰을 Windows 트랙패드처럼 사용하는 방법
 ## 1. 준비물
 
 - USB 데이터 전송이 가능한 USB-C 케이블
-- **adb (Android Platform Tools)** — phone2pad에는 포함되어 있지 않습니다(구글 공식 도구라 함께 배포하지 않습니다).
-  client가 adb를 자동으로 찾으므로, 아래 둘 중 **편한 방법 하나**만 따르면 됩니다.
+- **adb (Android Platform Tools) — 필수.** phone2pad에는 포함되어 있지 않습니다(구글 공식
+  도구라 함께 배포하지 않습니다). adb가 없으면 동작하지 않습니다. client가 adb를 자동으로
+  찾으므로, 아래 둘 중 **편한 방법 하나**만 따르면 됩니다. (자세한 설명: [docs/ADB-SETUP.md](docs/ADB-SETUP.md))
+  - **이미 있는 경우 (Android Studio 사용자):** 보통 adb가
+    `%LOCALAPPDATA%\Android\Sdk\platform-tools\adb.exe`에 이미 있어 별도 설정 없이 인식됩니다.
   - **방법 A (일반 설치):** [Android SDK Platform Tools](https://developer.android.com/tools/releases/platform-tools)를
-    설치하거나 Android Studio의 platform-tools를 쓰면 됩니다. 보통 별도 설정 없이 자동으로 인식됩니다.
+    내려받아 압축을 풀고 `platform-tools` 폴더를 PATH에 등록합니다. `adb version`이 동작하면 성공입니다.
   - **방법 B (옆에 풀기, 가장 쉬움):** 위 링크에서 platform-tools zip을 받아,
-    `phone2pad_client.exe`가 있는 폴더 안에 `tools\platform-tools` 폴더를 만들고 그 안에 압축을 풉니다.
-    (즉 `…\tools\platform-tools\adb.exe` 가 되도록.) PATH 설정이 필요 없습니다.
-  - adb를 못 찾으면 client가 실행 시 다운로드 주소와 설치 방법을 친절히 안내합니다.
+    `phone2pad_tray.exe`가 있는 폴더 안에 `platform-tools` 폴더째로 풉니다.
+    (즉 `…\platform-tools\adb.exe` 가 되도록.) PATH 설정이 필요 없습니다.
+  - adb를 못 찾으면 트레이 알림/콘솔이 다운로드 주소와 설치 방법을 안내합니다(트레이 메뉴의
+    **ADB 설치 안내 열기** 참고).
   - adb는 폰↔PC 사이의 **로컬 USB 통신**에만 쓰이며, 인터넷으로 전송되는 것은 없습니다.
 
 ## 2. 폰 설정 (최초 1회)
@@ -40,9 +44,11 @@ USB-C로 연결한 Android 폰을 Windows 트랙패드처럼 사용하는 방법
 3. 트레이 아이콘을 클릭하면 메뉴가 열립니다.
    - **서비스 시작 / 서비스 정지** — 서비스 시작·정지
    - **사용 방법 열기** — 이 안내(QUICKSTART) 열기
+   - **ADB 설치 안내 열기** — adb 설치 안내(ADB-SETUP) 열기
    - **Windows 시작 시 자동 실행** — 로그인 시 자동 시작 켜기/끄기 (체크 표시)
    - **종료** — 트레이 종료
-   - adb를 못 찾으면 트레이 알림으로 안내합니다(§1 참고).
+   - adb를 못 찾으면 트레이 상태가 **ADB를 찾을 수 없음**으로 표시되고 알림으로 안내합니다
+     (§1 및 **ADB 설치 안내 열기** 참고).
 
 > 자동 시작을 켜두면 PC를 켤 때마다 트레이가 자동으로 떠서 폰만 연결하면 바로 쓸 수 있습니다.
 

@@ -34,7 +34,7 @@ struct DeviceQuery {
 // A candidate adb.exe path together with a human label of where it came from.
 struct AdbCandidate {
     std::string path;
-    std::string source;  // e.g. "PATH", "Android SDK", "tools\\platform-tools next to the app"
+    std::string source;  // e.g. "PATH", "Android SDK", "platform-tools next to the app"
 };
 
 // Injectable environment for adb discovery. Holding these as plain values lets
@@ -76,7 +76,7 @@ public:
 
     // Ordered candidate adb.exe locations for the given environment. Order:
     // PATH -> Android SDK (LOCALAPPDATA, then ANDROID_HOME/ANDROID_SDK_ROOT) ->
-    // app-local tools\platform-tools (cwd) -> executable-relative tools\platform-tools.
+    // app-local platform-tools (cwd) -> executable-relative platform-tools.
     static std::vector<AdbCandidate> adbCandidatePaths(const AdbEnv& env);
 
     // Parse raw `adb devices` stdout into device rows.

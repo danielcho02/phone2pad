@@ -6,6 +6,19 @@
 
 ## [Unreleased]
 
+### Added
+- **PC**: 트레이 메뉴에 **ADB 설치 안내 열기** 추가 — 동봉된 `ADB-SETUP.md`(없으면
+  GitHub 사본)를 엽니다. adb가 필요하다는 점과 설치 방법을 한 곳에 정리한 사용자용 문서
+  `docs/ADB-SETUP.md` 추가(배포 zip 루트에 `ADB-SETUP.md`로 동봉).
+
+### Changed
+- **PC**: adb 앱 로컬 탐색 위치를 `tools\platform-tools` → `platform-tools`(실행 파일 옆)로
+  단순화. 즉 platform-tools zip을 `phone2pad_tray.exe` 옆에 그대로 풀면 됩니다
+  (`…\platform-tools\adb.exe`). PATH·Android SDK 탐색 순서는 그대로입니다.
+- **PC**: adb 미탐색 시 트레이 풍선 문구를 "Android Platform Tools 설치 안내를 확인하세요"로
+  명확화. QUICKSTART/README/windows-README에 adb 필수 안내와 Android Studio 기본 경로,
+  설치 방법(PATH 또는 exe 옆 platform-tools)을 보강.
+
 ## [0.3.0] - 2026-06-12
 
 실행 마찰을 줄이는 UX 릴리스. 매번 콘솔 `phone2pad_client.exe`를 띄우는 대신, 백그라운드에

@@ -10,15 +10,20 @@ USB-C로 연결한 Android 폰을 Windows 트랙패드처럼 사용하는 클라
   recorder.exe           터치 트레이스 녹화 (고급/진단용)
   replay.exe             녹화 트레이스 재생 (고급/진단용, 폰 없이 동작 점검)
   QUICKSTART.md          빠른 시작 안내 (트레이 메뉴의 "사용 방법 열기"가 이 파일을 엽니다)
+  ADB-SETUP.md           adb 설치 안내 (트레이 메뉴의 "ADB 설치 안내 열기"가 이 파일을 엽니다)
   LICENSE                MIT License
 
 이 exe들은 정적 CRT로 빌드되어 별도 런타임(VC++ 재배포 패키지) 설치가 필요 없습니다.
 
 사전 준비
 ---------
-1. adb(Android Platform Tools)가 필요합니다. 이 zip에는 포함되어 있지 않습니다.
-   - Android Studio를 설치했다면 platform-tools에 adb가 포함되어 있습니다.
-   - 또는 "Android SDK Platform Tools"를 내려받아 adb.exe를 PATH에 등록하세요.
+1. adb(Android Platform Tools)가 *필수*입니다. 이 zip에는 포함되어 있지 않습니다.
+   자세한 안내는 이 폴더의 ADB-SETUP.md(트레이 메뉴 "ADB 설치 안내 열기")를 참고하세요.
+   - Android Studio를 설치했다면 보통 adb가 이미 아래 위치에 있어 자동 인식됩니다:
+     %LOCALAPPDATA%\Android\Sdk\platform-tools\adb.exe
+   - 또는 "Android SDK Platform Tools"를 내려받아 압축을 풀고, 다음 둘 중 하나만 하세요:
+     (a) platform-tools 폴더를 PATH에 등록, 또는
+     (b) platform-tools 폴더째로 phone2pad_tray.exe 옆에 두기 (…\platform-tools\adb.exe).
      https://developer.android.com/tools/releases/platform-tools
 2. 폰에서 개발자 옵션 > USB 디버깅을 켜고, 연결 시 PC의 RSA 키를 허용하세요.
 3. 폰에 phone2pad 앱(APK)을 설치하세요.
@@ -35,6 +40,7 @@ USB-C로 연결한 Android 폰을 Windows 트랙패드처럼 사용하는 클라
 2. 트레이 아이콘을 클릭하면 메뉴가 열립니다:
    - 서비스 시작 / 서비스 정지 : 서비스 시작·정지
    - 사용 방법 열기            : 이 폴더의 QUICKSTART.md 열기
+   - ADB 설치 안내 열기        : 이 폴더의 ADB-SETUP.md 열기
    - Windows 시작 시 자동 실행  : 로그인 시 자동 시작 켜기/끄기 (체크 표시)
    - 종료                      : 트레이 종료
 3. 폰을 USB로 연결 → USB 디버깅 허용 → 폰 앱에서 "트랙패드 모드 시작"을 누르면

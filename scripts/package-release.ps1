@@ -102,6 +102,15 @@ if ($results['pc'] -eq 'PASS') {
         Write-Warning "QUICKSTART.md not found at repo root; zip will omit it."
     }
 
+    # Ship the adb setup guide flat in the zip root (source lives in docs/) so the
+    # tray's "ADB 설치 안내 열기" opens it locally; it falls back to the GitHub copy.
+    $adbSetup = Join-Path $repoRoot 'docs\ADB-SETUP.md'
+    if (Test-Path $adbSetup) {
+        Copy-Item $adbSetup (Join-Path $stageDir 'ADB-SETUP.md') -Force
+    } else {
+        Write-Warning "docs\ADB-SETUP.md not found; zip will omit the adb setup guide."
+    }
+
     if ($stageOk) {
         $winZipPath = Join-Path $distDir "$winName.zip"
         if (Test-Path $winZipPath) { Remove-Item -Force $winZipPath }

@@ -36,13 +36,16 @@ constexpr UINT kTrayUid = 1;
 constexpr UINT ID_STATUS = 1001;
 constexpr UINT ID_TOGGLE_SERVICE = 1002;
 constexpr UINT ID_OPEN_GUIDE = 1003;
-constexpr UINT ID_TOGGLE_AUTOSTART = 1004;
-constexpr UINT ID_EXIT = 1005;
+constexpr UINT ID_OPEN_ADB_GUIDE = 1004;
+constexpr UINT ID_TOGGLE_AUTOSTART = 1005;
+constexpr UINT ID_EXIT = 1006;
 
 constexpr wchar_t kWindowClass[] = L"phone2pad_tray_wnd";
 constexpr wchar_t kSingletonMutex[] = L"phone2pad_tray_singleton_b6f1";
 constexpr wchar_t kGuideUrl[] =
     L"https://github.com/danielcho02/phone2pad/blob/main/QUICKSTART.md";
+constexpr wchar_t kAdbGuideUrl[] =
+    L"https://github.com/danielcho02/phone2pad/blob/main/docs/ADB-SETUP.md";
 
 HWND g_wnd = nullptr;
 ClientService* g_service = nullptr;
@@ -86,7 +89,7 @@ std::wstring trayBalloonText(ServiceState s) {
         case ServiceState::Unauthorized:
             return L"폰에서 USB 디버깅 허용을 눌러주세요.";
         case ServiceState::AdbMissing:
-            return L"ADB를 찾을 수 없습니다. 설정 안내를 확인하세요.";
+            return L"ADB를 찾을 수 없습니다. Android Platform Tools 설치 안내를 확인하세요.";
         case ServiceState::MultipleDevices:
             return L"폰이 여러 대 연결되어 있습니다. 하나만 남겨주세요.";
         case ServiceState::ForwardFailed:
@@ -119,18 +122,20 @@ void onStateChanged(ServiceState s) {
     if (!balloon.empty()) showBalloon(L"phone2pad", balloon);
 }
 
-// Open the bundled QUICKSTART.md next to the exe; fall back to the GitHub copy.
-void openSetupGuide() {
+// Open a bundled doc that ships flat next to the exe (the release zip root, e.g.
+// QUICKSTART.md / ADB-SETUP.md); fall back to the GitHub copy when it isn't present
+// (e.g. running from a dev build tree).
+void openBundledDoc(const wchar_t* fileName, const wchar_t* fallbackUrl) {
     const std::wstring exe = autostart::currentExePath();
     const std::size_t pos = exe.find_last_of(L"\\/");
     const std::wstring dir = (pos == std::wstring::npos) ? std::wstring()
                                                          : exe.substr(0, pos + 1);
-    const std::wstring guide = dir + L"QUICKSTART.md";
-    const DWORD attrs = GetFileAttributesW(guide.c_str());
+    const std::wstring doc = dir + fileName;
+    const DWORD attrs = GetFileAttributesW(doc.c_str());
     if (attrs != INVALID_FILE_ATTRIBUTES && !(attrs & FILE_ATTRIBUTE_DIRECTORY)) {
-        ShellExecuteW(nullptr, L"open", guide.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
+        ShellExecuteW(nullptr, L"open", doc.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
     } else {
-        ShellExecuteW(nullptr, L"open", kGuideUrl, nullptr, nullptr, SW_SHOWNORMAL);
+        ShellExecuteW(nullptr, L"open", fallbackUrl, nullptr, nullptr, SW_SHOWNORMAL);
     }
 }
 
@@ -146,6 +151,7 @@ void showContextMenu() {
     AppendMenuW(menu, MF_STRING, ID_TOGGLE_SERVICE,
                 running ? L"서비스 정지" : L"서비스 시작");
     AppendMenuW(menu, MF_STRING, ID_OPEN_GUIDE, L"사용 방법 열기");
+    AppendMenuW(menu, MF_STRING, ID_OPEN_ADB_GUIDE, L"ADB 설치 안내 열기");
 
     const UINT autoFlags = MF_STRING | (autostart::isEnabled() ? MF_CHECKED : MF_UNCHECKED);
     AppendMenuW(menu, autoFlags, ID_TOGGLE_AUTOSTART, L"Windows 시작 시 자동 실행");
@@ -172,7 +178,10 @@ void showContextMenu() {
             }
             break;
         case ID_OPEN_GUIDE:
-            openSetupGuide();
+            openBundledDoc(L"QUICKSTART.md", kGuideUrl);
+            break;
+        case ID_OPEN_ADB_GUIDE:
+            openBundledDoc(L"ADB-SETUP.md", kAdbGuideUrl);
             break;
         case ID_TOGGLE_AUTOSTART:
             autostart::setEnabled(!autostart::isEnabled());

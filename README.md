@@ -99,11 +99,13 @@ automatically — pick whichever is easier:
 
 * **Install normally:** install Android Platform Tools (or Android Studio) so `adb`
   is on your `PATH`. Verify with `adb version`.
-* **Drop it next to the client:** download Platform Tools and unzip them into a
-  `tools\platform-tools` folder beside `phone2pad_client.exe` (so that
-  `…\tools\platform-tools\adb.exe` exists). No `PATH` setup needed.
+* **Drop it next to the client:** download Platform Tools and unzip the
+  `platform-tools` folder beside `phone2pad_tray.exe` / `phone2pad_client.exe` (so that
+  `…\platform-tools\adb.exe` exists). No `PATH` setup needed.
 
-If `adb` is missing, the client prints the download link and setup steps and exits.
+If `adb` is missing, the client prints the download link and setup steps and exits, and
+the tray shows an "ADB를 찾을 수 없음" status with an **ADB 설치 안내 열기** menu item.
+See [docs/ADB-SETUP.md](docs/ADB-SETUP.md) for step-by-step instructions.
 `adb` is used only for the local USB link between phone and PC — nothing goes online.
 
 ### 2. Install the Android app

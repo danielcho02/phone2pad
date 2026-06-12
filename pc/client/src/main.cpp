@@ -71,9 +71,10 @@ void printAdbMissing() {
         "nothing is sent online.\n\n"
         "Fix it one of two ways:\n"
         "  1) Install Android Platform Tools and make sure adb is on your PATH, or\n"
-        "  2) Download them and unzip into a \"tools\\platform-tools\" folder next to\n"
+        "  2) Download them and unzip into a \"platform-tools\" folder next to\n"
         "     phone2pad_client.exe.\n\n"
-        "Download: https://developer.android.com/tools/releases/platform-tools\n");
+        "Download: https://developer.android.com/tools/releases/platform-tools\n"
+        "See ADB-SETUP.md (next to the exe) for step-by-step instructions.\n");
 }
 
 // One concise, non-technical message per service state. Mirrors the v0.2.2 CLI

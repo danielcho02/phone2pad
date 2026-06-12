@@ -43,12 +43,12 @@ TEST_CASE("adb candidate ordering: PATH, SDK, app-local, exe-relative") {
     // Every documented source is represented.
     CHECK(countSource(c, "PATH") == 2);
     CHECK(countSource(c, "Android SDK") >= 1);
-    CHECK(countSource(c, "tools\\platform-tools next to the app") == 2);
+    CHECK(countSource(c, "platform-tools next to the app") == 2);
 
-    // Documented order: PATH < Android SDK < app-local/exe-relative tools.
+    // Documented order: PATH < Android SDK < app-local/exe-relative platform-tools.
     const std::size_t iPath = indexOfSource(c, "PATH");
     const std::size_t iSdk = indexOfSource(c, "Android SDK");
-    const std::size_t iTools = indexOfSource(c, "tools\\platform-tools next to the app");
+    const std::size_t iTools = indexOfSource(c, "platform-tools next to the app");
     CHECK(iPath < iSdk);
     CHECK(iSdk < iTools);
 
@@ -56,6 +56,12 @@ TEST_CASE("adb candidate ordering: PATH, SDK, app-local, exe-relative") {
     CHECK(c[0].path.find("path-a") != std::string::npos);
     CHECK(c[0].path.find("adb.exe") != std::string::npos);
     CHECK(c[1].path.find("path-b") != std::string::npos);
+
+    // App-local drop-in is "<dir>\platform-tools\adb.exe" (flat next to the exe),
+    // NOT the old "<dir>\tools\platform-tools\..." layout — guard against regressing
+    // the documented location.
+    CHECK(c[iTools].path.find("platform-tools\\adb.exe") != std::string::npos);
+    CHECK(c[iTools].path.find("tools\\platform-tools") == std::string::npos);
 }
 
 TEST_CASE("adb candidate: LOCALAPPDATA SDK path shape") {
@@ -80,7 +86,7 @@ TEST_CASE("adb candidate: cwd == exeDir does not duplicate app-local entry") {
     env.cwd = "C:\\same";
     env.exeDir = "C:\\same";
     const auto c = AdbManager::adbCandidatePaths(env);
-    CHECK(countSource(c, "tools\\platform-tools next to the app") == 1);
+    CHECK(countSource(c, "platform-tools next to the app") == 1);
 }
 
 TEST_CASE("parseDevices: empty / header-only") {

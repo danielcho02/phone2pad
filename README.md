@@ -23,7 +23,7 @@
 
 Run the Windows client, open the Android app, tap **Trackpad Mode Start**, and your phone becomes a black touch surface for your PC.
 
-> **v0.2.1 alpha / pre-release**
+> **v0.2.2 alpha / pre-release**
 > This is an early public release. It is usable for testing and feedback, but features, UX, and implementation details may change.
 
 ---
@@ -64,16 +64,16 @@ Download the latest alpha release from:
 
 **[GitHub Releases](https://github.com/danielcho02/phone2pad/releases)**
 
-For **v0.2.1 alpha**, use these files:
+For **v0.2.2 alpha**, use these files:
 
 | File                               | Description                   |
 | ---------------------------------- | ----------------------------- |
-| `phone2pad-windows-x64-v0.2.1.zip` | Windows x64 client            |
-| `phone2pad-android-v0.2.1-apk.zip` | Android APK packaged as a zip |
+| `phone2pad-windows-x64-v0.2.2.zip` | Windows x64 client            |
+| `phone2pad-android-v0.2.2-apk.zip` | Android APK packaged as a zip |
 | `SHA256SUMS.txt`                   | SHA256 checksums              |
 
 > GitHub web uploads may reject raw `.apk` files.
-> Download `phone2pad-android-v0.2.1-apk.zip`, unzip it, then install the APK inside.
+> Download `phone2pad-android-v0.2.2-apk.zip`, unzip it, then install the APK inside.
 
 ---
 
@@ -105,14 +105,14 @@ If `adb` is missing, the client prints the download link and setup steps and exi
 
 ### 2. Install the Android app
 
-1. Download `phone2pad-android-v0.3.0-apk.zip`.
+1. Download `phone2pad-android-v0.2.2-apk.zip`.
 2. Unzip it.
 3. Install the APK on your Android phone.
 4. Allow installation from unknown sources if Android asks.
 
 ### 3. Run the Windows client
 
-1. Download `phone2pad-windows-x64-v0.3.0.zip`.
+1. Download `phone2pad-windows-x64-v0.2.2.zip`.
 2. Unzip it.
 3. Run:
 
@@ -214,10 +214,8 @@ For more details, see **[PRIVACY.md](PRIVACY.md)**.
 * [x] Basic multi-touch gestures
 * [x] Release packaging for Windows and Android
 * [x] Better diagnostics for ADB/device issues
-* [ ] Gesture tuning and UX polish
-* [ ] Wi-Fi / Bluetooth transport exploration
-* [ ] Native Windows Precision Touchpad driver research
-* [ ] Installer / setup experience improvements
+* [ ] **v0.3.0** — Reduced launch friction: background / tray / autostart UX (no manual client launch each time) — *planned, not yet implemented*
+* [ ] **v0.4.0+** — Wi-Fi / Bluetooth transport, native Windows Precision Touchpad driver, major input-mode research
 
 ---
 

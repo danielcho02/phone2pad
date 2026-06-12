@@ -6,10 +6,11 @@
 
 ## [Unreleased]
 
-## [0.3.0] - 2026-06-11
+## [0.2.2] - 2026-06-12
 
-비개발자도 쉽게 설정할 수 있도록 adb 탐색·진단·안내를 개선한 셋업 UX 릴리스.
-제스처 판별 로직·임계값·프로토콜·Android UI는 변경되지 않았습니다. (USB/ADB 전용 유지)
+adb 탐색·진단·안내를 개선하고, 자연 스크롤 방향·가로/역가로 방향 정규화·패드 모드
+시스템 UI 동작을 다듬은 안정화/핫픽스 릴리스. 제스처 판별 로직·임계값·프로토콜은
+변경되지 않았습니다. (USB/ADB 전용 유지)
 
 ### Added
 - **PC**: adb 자동 탐색 — PATH, `%LOCALAPPDATA%\Android\Sdk\platform-tools`,
@@ -20,13 +21,21 @@
   다중 디바이스 / adb forward 실패 / 앱 미실행을 사람이 읽기 쉬운 문장으로 안내.
 - **PC**: 시작 시 client 동작·adb 위치·대기 상태를 알려주는 콘솔 출력.
 - **PC**: adb 경로 탐색 순서, `adb devices` 파싱, 디바이스 분류에 대한 단위 테스트.
+- **Android**: 가로(landscape) / 역가로(reverse-landscape) 방향 정규화 — 폰을 어느 쪽으로
+  눕혀도 일관된 패드 좌표계를 유지.
+- **Android**: 패드 모드 진입 시 짧은 종료 안내(how-to-exit) 힌트와, 시스템 UI가 보일 때
+  사용자가 트랙패드를 벗어났음을 알 수 있도록 시스템 UI 밝기를 살짝 올림.
+
+### Fixed
+- **PC**: 2손가락 자연 스크롤 방향이 사용자 기대와 반대로 동작하던 문제 수정.
 
 ### Changed
-- **Android**: 릴리스 메타데이터를 `versionCode 4` / `versionName "0.3.0"`로 올림
-  (앱 동작 변화는 없으나 v0.3.0 릴리스에 APK 포함).
+- **Android**: BlackPadActivity의 전체화면 / 시스템 UI 처리 동작을 개선
+  (몰입형 표시·힌트·밝기 전환 정리).
+- **Android**: 릴리스 메타데이터를 `versionCode 4` / `versionName "0.2.2"`로 올림.
 
-[Unreleased]: https://github.com/danielcho02/phone2pad/compare/v0.3.0...HEAD
-[0.3.0]: https://github.com/danielcho02/phone2pad/compare/v0.2.1...v0.3.0
+[Unreleased]: https://github.com/danielcho02/phone2pad/compare/v0.2.2...HEAD
+[0.2.2]: https://github.com/danielcho02/phone2pad/compare/v0.2.1...v0.2.2
 
 ## [0.2.1] - 2026-06-11
 

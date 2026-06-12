@@ -4,7 +4,7 @@
 // but touch stays alive. Raw MotionEvents are converted to TouchFrames and streamed
 // to the PC; the phone never interprets gestures.
 //
-// Usability (v0.3.0): the panel has two states.
+// Usability (v0.2.2): the panel has two states.
 //  - Pad active (focused, system bars hidden): a brief dim "trackpad mode / how to
 //    exit" hint on entry, then the panel fades to fully dark.
 //  - System UI showing (window focus lost to the shade, or system bars visible): the

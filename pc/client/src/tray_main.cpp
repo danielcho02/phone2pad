@@ -138,7 +138,7 @@ void showContextMenu() {
     HMENU menu = CreatePopupMenu();
     if (menu == nullptr) return;
 
-    const std::wstring status = L"Status: " + trayStatusLabel(g_state);
+    const std::wstring status = L"상태: " + trayStatusLabel(g_state);
     AppendMenuW(menu, MF_STRING | MF_GRAYED, ID_STATUS, status.c_str());
     AppendMenuW(menu, MF_SEPARATOR, 0, nullptr);
 

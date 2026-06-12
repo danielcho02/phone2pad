@@ -9,7 +9,7 @@ USB-C로 연결한 Android 폰을 Windows 트랙패드처럼 사용하는 클라
   phone2pad_client.exe   콘솔 클라이언트 (대체용) — 동일한 동작을 콘솔 창에서 실행
   recorder.exe           터치 트레이스 녹화 (고급/진단용)
   replay.exe             녹화 트레이스 재생 (고급/진단용, 폰 없이 동작 점검)
-  QUICKSTART.md          빠른 시작 안내 (트레이 메뉴의 "Open setup guide"가 이 파일을 엽니다)
+  QUICKSTART.md          빠른 시작 안내 (트레이 메뉴의 "사용 방법 열기"가 이 파일을 엽니다)
   LICENSE                MIT License
 
 이 exe들은 정적 CRT로 빌드되어 별도 런타임(VC++ 재배포 패키지) 설치가 필요 없습니다.

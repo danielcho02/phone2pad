@@ -23,7 +23,7 @@
 
 Run the Windows client, open the Android app, tap **Trackpad Mode Start**, and your phone becomes a black touch surface for your PC.
 
-> **Tip (v0.3.0):** The Windows side can run as a lightweight **tray companion** (`phone2pad_tray.exe`) that stays in the background with optional autostart-on-login. Find the **phone2pad** icon in the **hidden icons (^) area** at the bottom-right of the Windows taskbar (near the clock) and click it for status and controls.
+> **Coming in v0.3.0:** The Windows side can run as a lightweight **tray companion** (`phone2pad_tray.exe`) that stays in the background with optional autostart-on-login. Find the **phone2pad** icon in the **hidden icons (^) area** at the bottom-right of the Windows taskbar (near the clock) and click it for status and controls. (Built and in testing — not yet in the latest released download below.)
 > (한국어: Windows 작업표시줄 오른쪽 아래의 숨겨진 아이콘(^) 영역에서 phone2pad 아이콘을 찾고 클릭하세요.)
 
 > **v0.2.2 alpha / pre-release**
@@ -217,7 +217,7 @@ For more details, see **[PRIVACY.md](PRIVACY.md)**.
 * [x] Basic multi-touch gestures
 * [x] Release packaging for Windows and Android
 * [x] Better diagnostics for ADB/device issues
-* [ ] **v0.3.0** — Reduced launch friction: background / tray / autostart UX (no manual client launch each time) — *planned, not yet implemented*
+* [ ] **v0.3.0** — Reduced launch friction: background / tray / autostart UX (no manual client launch each time) — *implemented; pending the v0.3.0 Release*
 * [ ] **v0.4.0+** — Wi-Fi / Bluetooth transport, native Windows Precision Touchpad driver, major input-mode research
 
 ---

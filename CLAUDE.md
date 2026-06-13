@@ -119,7 +119,16 @@ phone2pad/
           포맷팅 단위 테스트 추가, 기존 회귀 유지(76 cases, 0 failures).
         - 배포: package-release가 트레이 exe + QUICKSTART.md 동봉, 트레이를 권장 진입점으로
           안내(README/QUICKSTART). Android versionCode 5 / versionName 0.3.0(동작 무변경).
-        - 실기기 검증(L4) 대기: 트레이 상태 전환 체감, 자동 시작 재부팅 검증, 유휴 CPU 확인.
+        - 일반 사용자용 Windows 설치 프로그램 추가(`scripts/installer/phone2pad.iss`,
+          Inno Setup) — 사용자별 설치(관리자 불필요, `PrivilegesRequired=lowest`),
+          시작 메뉴 `phone2pad` 바로 가기 + "앱 및 기능" 제거 항목, 설치 후 실행 옵션.
+          zip과 동일 staged payload 재사용(zip 패키징 무변경). **adb 번들/자동 다운로드/
+          PATH 변경 없음** — adb는 기존 first-run 설정 게이트가 담당. package-release에
+          빌드 단계 + 무인 설치→파일/바로 가기/`adb 미설치` 검증→무인 제거 스모크 테스트
+          추가(ISCC 부재 시 SKIPPED; 단 v0.3.0 릴리스는 installer/installer-verify PASS 필요,
+          `winget install JRSoftware.InnoSetup`).
+        - 실기기 검증(L4) 대기: 트레이 상태 전환 체감, 자동 시작 재부팅 검증, 유휴 CPU 확인,
+          설치 프로그램 실기 설치/제거 + 시작 메뉴 바로 가기 확인.
       - [ ] D-2 폴리시 — 팜 리젝션, 햅틱, 전력 최적화 (이후)
 
 작업 시작 전 이 체크리스트를 갱신하고, Phase 완료 시 체크 표시 후 커밋하라.

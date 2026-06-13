@@ -39,6 +39,8 @@ constexpr UINT ID_OPEN_GUIDE = 1003;
 constexpr UINT ID_OPEN_ADB_GUIDE = 1004;
 constexpr UINT ID_TOGGLE_AUTOSTART = 1005;
 constexpr UINT ID_EXIT = 1006;
+constexpr UINT ID_OPEN_ADB_PAGE = 1007;  // open the official Platform-Tools page
+constexpr UINT ID_RECHECK_ADB = 1008;    // re-run adb discovery (no tray relaunch)
 
 constexpr wchar_t kWindowClass[] = L"phone2pad_tray_wnd";
 constexpr wchar_t kSingletonMutex[] = L"phone2pad_tray_singleton_b6f1";
@@ -46,12 +48,17 @@ constexpr wchar_t kGuideUrl[] =
     L"https://github.com/danielcho02/phone2pad/blob/main/QUICKSTART.md";
 constexpr wchar_t kAdbGuideUrl[] =
     L"https://github.com/danielcho02/phone2pad/blob/main/docs/ADB-SETUP.md";
+// Official Android SDK Platform-Tools download page (the only adb source we point at;
+// we never auto-download or run an installer — see CLAUDE.md / no-bundling decision).
+constexpr wchar_t kAdbPageUrl[] =
+    L"https://developer.android.com/tools/releases/platform-tools";
 
 HWND g_wnd = nullptr;
 ClientService* g_service = nullptr;
 ServiceState g_state = ServiceState::Stopped;
 NOTIFYICONDATAW g_nid{};
 HICON g_icon = nullptr;  // the phone2pad logo icon (tray + balloon)
+bool g_adbDialogShown = false;  // one-shot: the first-run ADB setup dialog per run
 
 // (UTF-8 source via /utf-8; user-facing strings are Korean per CLAUDE.md.)
 //
@@ -61,21 +68,25 @@ HICON g_icon = nullptr;  // the phone2pad logo icon (tray + balloon)
 std::wstring trayStatusLabel(ServiceState s) {
     switch (s) {
         case ServiceState::Stopped:
+            return L"서비스 정지됨";
         case ServiceState::NoDevice:
-            return L"대기 중";
-        case ServiceState::AdbMissing:
-            return L"ADB를 찾을 수 없음";
-        case ServiceState::Unauthorized:
-        case ServiceState::DeviceOffline:
-        case ServiceState::MultipleDevices:
-        case ServiceState::ForwardFailed:
             return L"폰 연결 대기";
+        case ServiceState::AdbMissing:
+            return L"ADB 설치 필요";
+        case ServiceState::Unauthorized:
+            return L"폰에서 USB 디버깅 허용 필요";
+        case ServiceState::DeviceOffline:
+            return L"폰 인식 중…";
+        case ServiceState::MultipleDevices:
+            return L"폰이 여러 대 연결됨";
+        case ServiceState::ForwardFailed:
+            return L"USB 연결 실패 - 케이블 재연결";
         case ServiceState::WaitingForApp:
-            return L"앱 시작 대기";
+            return L"폰 앱에서 트랙패드 모드 시작 필요";
         case ServiceState::Connected:
             return L"연결됨 - 트랙패드 사용 중";
     }
-    return L"대기 중";
+    return L"폰 연결 대기";
 }
 
 // Korean balloon body, or empty = no balloon. Empty for routine idle ticks
@@ -89,7 +100,8 @@ std::wstring trayBalloonText(ServiceState s) {
         case ServiceState::Unauthorized:
             return L"폰에서 USB 디버깅 허용을 눌러주세요.";
         case ServiceState::AdbMissing:
-            return L"ADB를 찾을 수 없습니다. Android Platform Tools 설치 안내를 확인하세요.";
+            return L"phone2pad를 사용하려면 Android Platform Tools의 adb가 필요합니다. "
+                   L"설치 후 다시 확인하세요.";
         case ServiceState::MultipleDevices:
             return L"폰이 여러 대 연결되어 있습니다. 하나만 남겨주세요.";
         case ServiceState::ForwardFailed:
@@ -115,11 +127,56 @@ void showBalloon(const std::wstring& title, const std::wstring& msg) {
     Shell_NotifyIconW(NIM_MODIFY, &g_nid);
 }
 
+// Open the official Android SDK Platform-Tools download page. We only ever point the
+// user at this page — no auto-download, no installer, no PATH edit, no admin (the adb
+// no-bundling decision; see CLAUDE.md). The user installs adb themselves.
+void openAdbPage() {
+    ShellExecuteW(nullptr, L"open", kAdbPageUrl, nullptr, nullptr, SW_SHOWNORMAL);
+}
+
+// First-run setup gate: a plain-Korean dialog shown once per run when adb is missing.
+// Teaches the simplest, non-developer path (drop platform-tools next to the exe), with
+// no mention of GitHub/PATH, and offers to open the official download page.
+void showAdbSetupDialog() {
+    const wchar_t* msg =
+        L"phone2pad는 Android 폰과 USB로 연결하기 위해 adb가 필요합니다.\n\n"
+        L"설치 방법 (가장 쉬움):\n"
+        L"1. [ADB 설치 페이지 열기]로 Android SDK Platform-Tools를 다운로드합니다.\n"
+        L"2. 압축을 푼 platform-tools 폴더를 phone2pad_tray.exe 옆에 둡니다:\n"
+        L"       phone2pad\\\n"
+        L"         phone2pad_tray.exe\n"
+        L"         platform-tools\\adb.exe\n"
+        L"3. 트레이 메뉴에서 [ADB 다시 확인]을 누릅니다.\n\n"
+        L"지금 설치 페이지를 여시겠습니까?";
+    const int r = MessageBoxW(g_wnd, msg, L"phone2pad — ADB 설치 필요",
+                              MB_YESNO | MB_ICONINFORMATION);
+    if (r == IDYES) openAdbPage();
+}
+
 void onStateChanged(ServiceState s) {
     g_state = s;
     setTooltip(L"phone2pad - " + trayStatusLabel(s));
     const std::wstring balloon = trayBalloonText(s);
     if (!balloon.empty()) showBalloon(L"phone2pad", balloon);
+    // First time we hit AdbMissing, walk the user through setup (one-shot per run).
+    if (s == ServiceState::AdbMissing && !g_adbDialogShown) {
+        g_adbDialogShown = true;
+        showAdbSetupDialog();
+    }
+}
+
+// Re-run adb discovery without relaunching the tray (synchronous; see
+// ClientService::restart()). Give explicit feedback: still-missing keeps the AdbMissing
+// gate with a "where's platform-tools?" hint; found rolls into the normal flow.
+void recheckAdb() {
+    if (g_service == nullptr) return;
+    g_service->restart();
+    if (g_service->adbReady()) {
+        showBalloon(L"phone2pad", L"adb를 찾았습니다.");
+    } else {
+        showBalloon(L"phone2pad",
+                    L"adb를 아직 찾지 못했습니다. platform-tools 폴더 위치를 확인하세요.");
+    }
 }
 
 // Open a bundled doc that ships flat next to the exe (the release zip root, e.g.
@@ -150,8 +207,17 @@ void showContextMenu() {
     const bool running = g_service != nullptr && g_service->running();
     AppendMenuW(menu, MF_STRING, ID_TOGGLE_SERVICE,
                 running ? L"서비스 정지" : L"서비스 시작");
+
+    // ADB setup items only surface when adb is missing — primary action first. With adb
+    // present the menu stays lean (the setup gate is irrelevant once it's installed).
+    const bool adbMissing = g_service != nullptr && !g_service->adbReady();
+    if (adbMissing) {
+        AppendMenuW(menu, MF_STRING, ID_OPEN_ADB_PAGE, L"ADB 설치 페이지 열기");
+        AppendMenuW(menu, MF_STRING, ID_RECHECK_ADB, L"ADB 다시 확인");
+        AppendMenuW(menu, MF_STRING, ID_OPEN_ADB_GUIDE, L"ADB 설치 안내 열기");
+    }
+
     AppendMenuW(menu, MF_STRING, ID_OPEN_GUIDE, L"사용 방법 열기");
-    AppendMenuW(menu, MF_STRING, ID_OPEN_ADB_GUIDE, L"ADB 설치 안내 열기");
 
     const UINT autoFlags = MF_STRING | (autostart::isEnabled() ? MF_CHECKED : MF_UNCHECKED);
     AppendMenuW(menu, autoFlags, ID_TOGGLE_AUTOSTART, L"Windows 시작 시 자동 실행");
@@ -179,6 +245,12 @@ void showContextMenu() {
             break;
         case ID_OPEN_GUIDE:
             openBundledDoc(L"QUICKSTART.md", kGuideUrl);
+            break;
+        case ID_OPEN_ADB_PAGE:
+            openAdbPage();
+            break;
+        case ID_RECHECK_ADB:
+            recheckAdb();
             break;
         case ID_OPEN_ADB_GUIDE:
             openBundledDoc(L"ADB-SETUP.md", kAdbGuideUrl);

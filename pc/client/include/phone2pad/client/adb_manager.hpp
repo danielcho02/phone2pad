@@ -60,6 +60,13 @@ public:
     const std::string& adbPath() const { return adb_; }
     const std::string& adbSource() const { return source_; }
 
+    // Re-run adb discovery against the current environment and update adb_/source_/
+    // found_; returns ready(). Lets a front-end recover after the user installs adb
+    // (e.g. drops platform-tools next to the exe) without restarting the process.
+    // Not thread-safe: call only when no worker is using this manager (the service
+    // stops its worker first — see ClientService::restart()).
+    bool recheck();
+
     // Classify the currently connected devices (runs `adb devices`).
     DeviceQuery queryDevices() const;
 

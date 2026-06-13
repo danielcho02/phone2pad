@@ -7,17 +7,39 @@
 ## [Unreleased]
 
 ### Added
-- **PC**: 트레이 메뉴에 **ADB 설치 안내 열기** 추가 — 동봉된 `ADB-SETUP.md`(없으면
-  GitHub 사본)를 엽니다. adb가 필요하다는 점과 설치 방법을 한 곳에 정리한 사용자용 문서
-  `docs/ADB-SETUP.md` 추가(배포 zip 루트에 `ADB-SETUP.md`로 동봉).
+- **PC(배포)**: **일반 사용자용 Windows 설치 프로그램**(`phone2pad-setup-vX.Y.Z.exe`,
+  Inno Setup) 추가 — **관리자 권한 불필요(사용자별 설치)**, **시작 메뉴 `phone2pad`
+  바로 가기**와 Windows **"앱 및 기능" 제거 항목** 생성, 설치 직후 실행 옵션 제공.
+  포터블 zip과 **동일한 실행 파일/문서**를 담으며(zip 패키징은 그대로 유지),
+  **adb는 번들하지 않고 자동 다운로드/PATH 변경도 하지 않음** — adb는 기존 트레이
+  first-run 설정 게이트가 그대로 담당. `scripts/installer/phone2pad.iss` +
+  `scripts/package-release.ps1`에 빌드 단계와 **무인 설치→파일/바로 가기 검증→무인 제거**
+  스모크 테스트 추가(ISCC 부재 시 SKIPPED, 단 v0.3.0 릴리스는 PASS 필요).
+- **PC**: **ADB 설치 first-run 설정 게이트** — adb가 없으면 트레이가 처음 그 상태가 될 때
+  한국어 안내 창(MessageBox)을 한 번 띄워 비개발자도 따라 할 수 있는 가장 쉬운 방법
+  (platform-tools 폴더를 `phone2pad_tray.exe` 옆에 두기)을 안내합니다. GitHub·PATH 지식이
+  필요 없습니다.
+- **PC**: 트레이 메뉴에 adb 미탐색 시에만 나타나는 항목 추가 — **ADB 설치 페이지 열기**
+  (공식 Android SDK Platform-Tools 페이지만 엽니다. 자동 다운로드·설치·PATH 변경·관리자
+  권한 없음), **ADB 다시 확인**(트레이를 다시 실행하지 않고 adb 재탐색). 기존
+  **ADB 설치 안내 열기**(동봉 `ADB-SETUP.md`)는 보조 항목으로 유지.
+- **PC(engine)**: `AdbManager::recheck()` / `ClientService::restart()` 추가 — 워커를 멈추고
+  adb를 재탐색한 뒤 다시 시작(동기, 경쟁 없음, 고아 프로세스 없음). 트레이 **ADB 다시 확인**이
+  이를 사용하며, 찾으면 **폰 연결 대기**로 전환하고 못 찾으면 폴더 위치 확인 알림을 띄웁니다.
 
 ### Changed
+- **PC**: 트레이 상태 문구를 상황별로 분리해 "할 일"이 보이도록 개선 — `ADB 설치 필요` /
+  `폰 연결 대기` / `폰에서 USB 디버깅 허용 필요` / `폰 인식 중…` / `폰이 여러 대 연결됨` /
+  `USB 연결 실패 - 케이블 재연결` / `폰 앱에서 트랙패드 모드 시작 필요` /
+  `연결됨 - 트랙패드 사용 중`. (이전에는 여러 상태가 `폰 연결 대기` 하나로 합쳐졌습니다.)
+- **PC**: adb 미탐색 풍선 문구를 "phone2pad를 사용하려면 Android Platform Tools의 adb가
+  필요합니다. 설치 후 다시 확인하세요."로 명확화. QUICKSTART/README/windows-README/ADB-SETUP을
+  실제 첫 실행 흐름(트레이 안내 → 설치 페이지 → exe 옆 platform-tools → 다시 확인)에 맞춰
+  단순화하고, **최신 공식 릴리스는 v0.3.0 게시 전까지 v0.2.2**이며 adb는 **이 버전에서
+  번들하지 않음**을 명시.
 - **PC**: adb 앱 로컬 탐색 위치를 `tools\platform-tools` → `platform-tools`(실행 파일 옆)로
   단순화. 즉 platform-tools zip을 `phone2pad_tray.exe` 옆에 그대로 풀면 됩니다
   (`…\platform-tools\adb.exe`). PATH·Android SDK 탐색 순서는 그대로입니다.
-- **PC**: adb 미탐색 시 트레이 풍선 문구를 "Android Platform Tools 설치 안내를 확인하세요"로
-  명확화. QUICKSTART/README/windows-README에 adb 필수 안내와 Android Studio 기본 경로,
-  설치 방법(PATH 또는 exe 옆 platform-tools)을 보강.
 
 ## [0.3.0] - 2026-06-12
 

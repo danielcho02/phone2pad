@@ -123,6 +123,12 @@ void ClientService::stop() {
     setState(ServiceState::Stopped);
 }
 
+void ClientService::restart() {
+    stop();           // joins the worker: adb_ is no longer touched by another thread
+    adb_.recheck();   // pick up adb installed/moved since construction
+    start();          // new worker run re-evaluates adb_.ready() and emits the state
+}
+
 ServiceState ClientService::state() const {
     std::lock_guard<std::mutex> lock(mtx_);
     return state_;

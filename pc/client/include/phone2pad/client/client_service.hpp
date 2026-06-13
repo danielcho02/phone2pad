@@ -91,6 +91,12 @@ public:
     void start();  // idempotent: spins the worker thread (no-op if already running)
     void stop();   // idempotent: signals stop and joins the worker
 
+    // Stop the worker, re-run adb discovery, then start again. Lets a front-end retry
+    // after the user fixes setup (e.g. installs adb) without relaunching the process.
+    // Synchronous: stop() joins the worker before adb is re-checked, so there is no
+    // race and no orphaned work; adbReady() is accurate on return.
+    void restart();
+
     bool running() const { return running_.load(); }
     ServiceState state() const;
 

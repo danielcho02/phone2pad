@@ -71,6 +71,18 @@ AdbManager::AdbManager(std::string package, std::string activity, int port)
     }
 }
 
+bool AdbManager::recheck() {
+    adb_.clear();
+    source_.clear();
+    found_ = false;
+    if (auto found = locateAdb(currentEnv())) {
+        adb_ = found->path;
+        source_ = found->source;
+        found_ = true;
+    }
+    return found_;
+}
+
 AdbEnv AdbManager::currentEnv() {
     namespace fs = std::filesystem;
     AdbEnv env;

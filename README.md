@@ -23,11 +23,12 @@
 
 Run the Windows client, open the Android app, tap **Trackpad Mode Start**, and your phone becomes a black touch surface for your PC.
 
-> **Coming in v0.3.0:** The Windows side can run as a lightweight **tray companion** (`phone2pad_tray.exe`) that stays in the background with optional autostart-on-login. Find the **phone2pad** icon in the **hidden icons (^) area** at the bottom-right of the Windows taskbar (near the clock) and click it for status and controls. (Built and in testing — not yet in the latest released download below.)
+> **Coming in v0.3.0:** The Windows side can run as a lightweight **tray companion** (`phone2pad_tray.exe`) that stays in the background with optional autostart-on-login. Find the **phone2pad** icon in the **hidden icons (^) area** at the bottom-right of the Windows taskbar (near the clock) and click it for status and controls. When `adb` is missing the tray acts as an in-app setup gate (guided dialog + **ADB 설치 페이지 열기** / **ADB 다시 확인**). v0.3.0 also adds a **per-user Windows installer** (`phone2pad-setup-vX.Y.Z.exe`, no admin) that creates a **phone2pad** Start Menu shortcut and an uninstall entry in Windows **Apps & Features** — the portable zip remains for developers. (Built and in release-readiness polish — **not yet released**; see the note below.)
 > (한국어: Windows 작업표시줄 오른쪽 아래의 숨겨진 아이콘(^) 영역에서 phone2pad 아이콘을 찾고 클릭하세요.)
 
-> **v0.2.2 alpha / pre-release**
-> This is an early public release. It is usable for testing and feedback, but features, UX, and implementation details may change.
+> **Latest official release: v0.2.2 alpha / pre-release**
+> The latest **published** GitHub Release remains **v0.2.2** — that is what the download links below point to. **v0.3.0** (the tray companion) is built and in release-readiness polish but is **not tagged or released yet**. `adb` is still required and is **not bundled** in v0.3.0.
+> This is an early public project: features, UX, and implementation details may change.
 
 ---
 
@@ -94,17 +95,21 @@ You need:
 * Android USB debugging enabled
 * Android Platform Tools / `adb`
 
-phone2pad does not ship Google's Platform Tools. The client finds `adb`
-automatically — pick whichever is easier:
+phone2pad does not ship Google's Platform Tools (redistribution needs separate license
+review), so `adb` is **not bundled**. The app finds `adb` automatically and, when it's
+missing, the tray guides you through setup:
 
-* **Install normally:** install Android Platform Tools (or Android Studio) so `adb`
-  is on your `PATH`. Verify with `adb version`.
-* **Drop it next to the client:** download Platform Tools and unzip the
-  `platform-tools` folder beside `phone2pad_tray.exe` / `phone2pad_client.exe` (so that
-  `…\platform-tools\adb.exe` exists). No `PATH` setup needed.
+* **Easiest (drop-in):** download Platform Tools and unzip the `platform-tools` folder
+  beside `phone2pad_tray.exe` (so that `…\platform-tools\adb.exe` exists), then click
+  **ADB 다시 확인**. No `PATH` setup, no admin.
+* **Already have it:** Android Studio users usually have `adb` at
+  `%LOCALAPPDATA%\Android\Sdk\platform-tools\adb.exe` — it's detected automatically.
+* **Advanced:** put `platform-tools` on your `PATH` (verify with `adb version`).
 
-If `adb` is missing, the client prints the download link and setup steps and exits, and
-the tray shows an "ADB를 찾을 수 없음" status with an **ADB 설치 안내 열기** menu item.
+When `adb` is missing the tray shows an **ADB 설치 필요** status, pops a guided Korean
+setup dialog, and offers **ADB 설치 페이지 열기** (opens the official download page only —
+no auto-download) and **ADB 다시 확인** (re-checks without relaunching the tray). The
+console `phone2pad_client.exe` prints the same download link and setup steps.
 See [docs/ADB-SETUP.md](docs/ADB-SETUP.md) for step-by-step instructions.
 `adb` is used only for the local USB link between phone and PC — nothing goes online.
 
@@ -116,6 +121,13 @@ See [docs/ADB-SETUP.md](docs/ADB-SETUP.md) for step-by-step instructions.
 4. Allow installation from unknown sources if Android asks.
 
 ### 3. Run the Windows client
+
+**v0.3.0 (once released) — easiest:** download `phone2pad-setup-vX.Y.Z.exe`, run it
+(per-user, no admin), then launch **phone2pad** from the Start Menu. Uninstall any
+time from Windows **Apps & Features**. The portable zip below stays available for
+developers (no install step).
+
+For **v0.2.2 (current release)** use the portable zip:
 
 1. Download `phone2pad-windows-x64-v0.2.2.zip`.
 2. Unzip it.

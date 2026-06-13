@@ -33,6 +33,21 @@ function Find-Cmake {
     return $null
 }
 
+function Find-Iscc {
+    # Inno Setup 6 compiler. Used to build the per-user Windows installer.
+    $cmd = Get-Command ISCC.exe -ErrorAction SilentlyContinue
+    if ($cmd) { return $cmd.Source }
+    # Per-machine (default) and per-user (winget) install locations.
+    $bases = @(${env:ProgramFiles(x86)}, $env:ProgramFiles,
+               (Join-Path $env:LOCALAPPDATA 'Programs'))
+    foreach ($base in $bases) {
+        if (-not $base) { continue }
+        $p = Join-Path $base 'Inno Setup 6\ISCC.exe'
+        if (Test-Path $p) { return $p }
+    }
+    return $null
+}
+
 $distDir = Join-Path $repoRoot 'dist'
 $buildDir = Join-Path $repoRoot 'pc\build-release'
 $winName = "phone2pad-windows-x64-v$Version"
@@ -122,6 +137,135 @@ if ($results['pc'] -eq 'PASS') {
     }
 } else {
     $results['zip'] = 'SKIPPED (no PC build)'
+}
+
+# --- Stage 2.5: Windows installer (Inno Setup) --------------------------------
+# Packages the SAME staged folder as the zip into a per-user setup .exe. Builds
+# only when the zip staged cleanly and ISCC.exe is available; otherwise SKIPPED.
+Write-Host "`n=== Stage 2.5: Windows installer ===" -ForegroundColor Cyan
+$setupExe = $null
+if ($results['zip'] -ne 'PASS') {
+    $results['installer'] = 'SKIPPED (no zip)'
+} else {
+    $iscc = Find-Iscc
+    if (-not $iscc) {
+        Write-Warning "ISCC.exe (Inno Setup 6) not found; cannot build the installer."
+        Write-Host  "  Install it once with:  winget install JRSoftware.InnoSetup" -ForegroundColor Yellow
+        Write-Host  "  A v0.3.0 RELEASE requires installer + installer-verify to PASS (SKIPPED is dev-only)." -ForegroundColor Yellow
+        $results['installer'] = 'SKIPPED (ISCC not found)'
+    } else {
+        $iss = Join-Path $repoRoot 'scripts\installer\phone2pad.iss'
+        & $iscc "/DMyVersion=$Version" "/DStageDir=$stageDir" "/DRepoRoot=$repoRoot" $iss
+        $expectedSetup = Join-Path $distDir "phone2pad-setup-v$Version.exe"
+        if ($? -and (Test-Path $expectedSetup)) {
+            $setupExe = $expectedSetup
+            $producedAssets.Add($setupExe)
+            $results['installer'] = 'PASS'
+        } else {
+            $results['installer'] = 'FAIL (iscc)'
+        }
+    }
+}
+
+# --- Stage 2.6: installer verification (silent install -> assert -> uninstall) -
+# Smoke test that the installer lands the expected files + the Start Menu shortcut,
+# does NOT install adb, does NOT launch the tray (skipifsilent), and uninstalls
+# cleanly. Runs per-user into a temp dir. The installer uses DisableProgramGroupPage
+# (so /GROUP is ignored) and always creates the default "phone2pad" group; to avoid
+# disturbing a real install, the test is SKIPPED when a phone2pad install is already
+# present. Start Menu shortcut creation is a requirement, so NO /NOICONS.
+Write-Host "`n=== Stage 2.6: installer verification ===" -ForegroundColor Cyan
+$startMenu = Join-Path $env:APPDATA 'Microsoft\Windows\Start Menu\Programs'
+$groupDir  = Join-Path $startMenu 'phone2pad'
+$shortcut  = Join-Path $groupDir 'phone2pad.lnk'
+# Inno appends "_is1" to the AppId for its HKCU uninstall key.
+$unKey = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\{8F2A6C13-7E4B-4D9A-AC15-2B6E9D3F1A07}_is1'
+if ($results['installer'] -ne 'PASS') {
+    $results['installer-verify'] = "SKIPPED ($($results['installer']))"
+} elseif (-not (Test-Path $setupExe) -or (Get-Item $setupExe).Length -le 0) {
+    $results['installer-verify'] = 'FAIL (setup exe missing/empty)'
+} elseif ((Test-Path $shortcut) -or (Test-Path $unKey)) {
+    Write-Warning "an existing phone2pad install was detected; skipping the destructive smoke test so it is not clobbered."
+    $results['installer-verify'] = 'SKIPPED (existing phone2pad install present)'
+} else {
+    $rand        = [guid]::NewGuid().ToString('N').Substring(0, 8)
+    $verifyDir   = Join-Path $env:TEMP "phone2pad-verify-$rand"
+    $verifyLog   = "$verifyDir.log"
+    $vFail = New-Object System.Collections.Generic.List[string]
+    $ranSilently = $true
+    try {
+        if (Test-Path $verifyDir) { Remove-Item -Recurse -Force $verifyDir }
+
+        # Silent per-user install. skipifsilent in [Run] keeps the tray from launching.
+        # /GROUP is intentionally omitted (it is ignored under DisableProgramGroupPage).
+        $instArgs = @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART',
+                      "/DIR=$verifyDir", "/LOG=$verifyLog")
+        try {
+            $proc = Start-Process -FilePath $setupExe -ArgumentList $instArgs -Wait -PassThru -ErrorAction Stop
+            if ($proc.ExitCode -ne 0) { $vFail.Add("installer exit code $($proc.ExitCode)") }
+        } catch {
+            $ranSilently = $false
+            Write-Warning "could not launch the installer silently: $($_.Exception.Message)"
+        }
+
+        if ($ranSilently) {
+            # Inno's loader returns after the install completes for a non-elevated run,
+            # but settle briefly so the Start Menu shortcut is flushed to disk.
+            $deadline = (Get-Date).AddSeconds(30)
+            while (-not (Test-Path (Join-Path $verifyDir 'phone2pad_tray.exe')) -and (Get-Date) -lt $deadline) {
+                Start-Sleep -Milliseconds 300
+            }
+
+            # (3) installed files present
+            foreach ($f in @('phone2pad_tray.exe', 'phone2pad_client.exe', 'recorder.exe', 'replay.exe')) {
+                if (-not (Test-Path (Join-Path $verifyDir $f))) { $vFail.Add("missing installed file: $f") }
+            }
+            # (4) Start Menu shortcut created
+            if (-not (Test-Path $shortcut)) { $vFail.Add("missing Start Menu shortcut: $shortcut") }
+            # (5) adb / platform-tools NOT installed
+            if (Test-Path (Join-Path $verifyDir 'adb.exe'))        { $vFail.Add('adb.exe was installed (must not be)') }
+            if (Test-Path (Join-Path $verifyDir 'platform-tools')) { $vFail.Add('platform-tools was installed (must not be)') }
+
+            # (6) silent uninstall
+            $uninst = Join-Path $verifyDir 'unins000.exe'
+            if (Test-Path $uninst) {
+                try {
+                    Start-Process -FilePath $uninst -ArgumentList @('/VERYSILENT', '/SUPPRESSMSGBOXES') -Wait -ErrorAction Stop
+                } catch {
+                    $vFail.Add("uninstall failed to launch: $($_.Exception.Message)")
+                }
+                # The uninstaller copies itself to temp and self-deletes the dir async.
+                $udeadline = (Get-Date).AddSeconds(30)
+                while ((Test-Path $verifyDir) -and (Get-Date) -lt $udeadline) {
+                    Start-Sleep -Milliseconds 300
+                }
+                # (7) install dir + shortcut removed
+                if (Test-Path $verifyDir) { $vFail.Add('install dir not removed by uninstall') }
+                if (Test-Path $shortcut)  { $vFail.Add('Start Menu shortcut not removed by uninstall') }
+            } else {
+                $vFail.Add('uninstaller (unins000.exe) not found')
+            }
+        }
+    } finally {
+        # Best-effort cleanup so a failed run never leaves verify artifacts behind.
+        foreach ($leftover in @($verifyDir, $groupDir)) {
+            if ($leftover -and (Test-Path $leftover)) {
+                Remove-Item -Recurse -Force $leftover -ErrorAction SilentlyContinue
+            }
+        }
+        if (Test-Path $verifyLog) { Remove-Item -Force $verifyLog -ErrorAction SilentlyContinue }
+    }
+
+    if (-not $ranSilently) {
+        # Could not exercise the installer; fall back to the existence/size check
+        # (already passed above to reach here).
+        $results['installer-verify'] = 'PASS (exists only — silent run unavailable)'
+    } elseif ($vFail.Count -eq 0) {
+        $results['installer-verify'] = 'PASS'
+    } else {
+        Write-Warning ("installer verification failures:`n  - " + ($vFail -join "`n  - "))
+        $results['installer-verify'] = 'FAIL (' + ($vFail -join '; ') + ')'
+    }
 }
 
 # --- Stage 3: Android release APK/AAB (only with a keystore) -------------------

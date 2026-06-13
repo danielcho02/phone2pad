@@ -11,8 +11,9 @@ USB-C로 연결한 Android 폰을 Windows 트랙패드처럼 사용하는 방법
 - **adb (Android Platform Tools) — 필수.** phone2pad에는 포함되어 있지 않습니다(구글 공식
   도구라 함께 배포하지 않습니다). adb가 없으면 동작하지 않습니다.
   - **걱정하지 마세요 — 트레이가 직접 안내합니다.** `phone2pad_tray.exe`를 실행했을 때
-    adb가 없으면, 설치 안내 창이 뜨고 트레이 메뉴에 **[ADB 설치 페이지 열기]** 와
-    **[ADB 다시 확인]** 항목이 나타납니다. 아래 §3-A를 그대로 따라 하면 됩니다.
+    adb가 없으면, 설치 안내 창이 뜨고 트레이 메뉴에 **[ADB 설치 페이지 열기]**,
+    **[platform-tools 폴더 선택]**, **[ADB 다시 확인]** 항목이 나타납니다. 아래 §3-A를
+    그대로 따라 하면 됩니다.
   - Android Studio를 이미 설치했다면 보통 adb가 자동으로 인식되어 이 과정이 필요 없습니다.
   - adb는 폰↔PC 사이의 **로컬 USB 통신**에만 쓰이며, 인터넷으로 전송되는 것은 없습니다.
   - (자세한 설명: [docs/ADB-SETUP.md](docs/ADB-SETUP.md))
@@ -58,7 +59,8 @@ USB-C로 연결한 Android 폰을 Windows 트랙패드처럼 사용하는 방법
    - **Windows 시작 시 자동 실행** — 로그인 시 자동 시작 켜기/끄기 (체크 표시)
    - **종료** — 트레이 종료
    - adb가 없을 때만 추가로 나타나는 항목: **ADB 설치 페이지 열기** /
-     **ADB 다시 확인** / **ADB 설치 안내 열기** (아래 §3-A 참고).
+     **platform-tools 폴더 선택** / **ADB 다시 확인** / **ADB 설치 안내 열기**
+     (아래 §3-A 참고).
 
 > 자동 시작을 켜두면 PC를 켤 때마다 트레이가 자동으로 떠서 폰만 연결하면 바로 쓸 수 있습니다.
 
@@ -70,17 +72,17 @@ USB-C로 연결한 Android 폰을 Windows 트랙패드처럼 사용하는 방법
 1. 트레이 메뉴에서 **[ADB 설치 페이지 열기]**를 누릅니다 — 공식 Android SDK Platform-Tools
    다운로드 페이지가 열립니다. (자동 다운로드·설치는 하지 않습니다.)
 2. Windows용 zip을 내려받아 **압축을 풉니다.** 안에 `platform-tools` 폴더가 있습니다.
-3. 그 `platform-tools` 폴더째로 **`phone2pad_tray.exe`가 있는 폴더 안에** 넣습니다:
-
-   ```
-   phone2pad\
-     phone2pad_tray.exe
-     platform-tools\adb.exe
-   ```
-
+3. 트레이 메뉴에서 **[platform-tools 폴더 선택]**을 누르고, 방금 **압축을 푼
+   `platform-tools` 폴더**를 선택합니다. (폴더를 옮길 필요 없이 그 자리에서 선택하면 됩니다.)
+   - 폴더 안에 `adb.exe`가 있어야 합니다. 다른 폴더를 고르면 "adb.exe를 찾을 수 없습니다"
+     알림이 뜨니, `platform-tools` 폴더를 다시 선택하세요.
 4. 트레이 메뉴에서 **[ADB 다시 확인]**을 누릅니다. 상태가 **폰 연결 대기**로 바뀌면
-   준비 완료입니다. (트레이를 다시 실행할 필요는 없습니다.) 아직 못 찾으면 폴더 위치를
-   확인하라는 알림이 뜹니다 — `platform-tools` 폴더가 exe 바로 옆에 있는지 확인하세요.
+   준비 완료입니다. (폴더를 선택하면 자동으로 다시 확인하므로, 보통 바로 **폰 연결 대기**로
+   바뀝니다.)
+
+> 선택한 경로는 `%LOCALAPPDATA%\phone2pad\config.json`에 저장되어 다음 실행에도 유지됩니다.
+> (고급) `platform-tools`를 `PATH`에 등록하거나 `phone2pad_tray.exe` 옆에 두는 방법도
+> 됩니다 — [docs/ADB-SETUP.md](docs/ADB-SETUP.md) 참고.
 
 ## 3-B. (대체) 콘솔 client 실행
 

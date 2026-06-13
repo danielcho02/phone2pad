@@ -64,6 +64,30 @@ TEST_CASE("adb candidate ordering: PATH, SDK, app-local, exe-relative") {
     CHECK(c[iTools].path.find("tools\\platform-tools") == std::string::npos);
 }
 
+TEST_CASE("adb candidate: configured path is first, before PATH") {
+    AdbEnv env;
+    env.configuredAdbPath = "C:\\Users\\u\\Downloads\\platform-tools\\adb.exe";
+    env.pathDirs = {"C:\\path-a"};
+    env.localAppData = "C:\\Users\\u\\AppData\\Local";
+
+    const auto c = AdbManager::adbCandidatePaths(env);
+    CHECK(!c.empty());
+    CHECK_EQ(c[0].source, std::string("configured path"));
+    CHECK_EQ(c[0].path, env.configuredAdbPath);
+
+    // It must precede PATH (an explicit choice wins).
+    const std::size_t iConfigured = indexOfSource(c, "configured path");
+    const std::size_t iPath = indexOfSource(c, "PATH");
+    CHECK(iConfigured < iPath);
+}
+
+TEST_CASE("adb candidate: no configured path adds no configured candidate") {
+    AdbEnv env;
+    env.pathDirs = {"C:\\path-a"};
+    const auto c = AdbManager::adbCandidatePaths(env);
+    CHECK(countSource(c, "configured path") == 0);
+}
+
 TEST_CASE("adb candidate: LOCALAPPDATA SDK path shape") {
     AdbEnv env;
     env.localAppData = "C:\\Users\\u\\AppData\\Local";

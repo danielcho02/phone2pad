@@ -7,6 +7,12 @@
 ## [Unreleased]
 
 ### Added
+- **PC**: 트레이 메뉴에 **platform-tools 폴더 선택** 추가(adb 미탐색 시에만 표시) — Windows
+  폴더 선택 창에서 압축을 푼 `platform-tools` 폴더를 고르면, 폴더 안 `adb.exe`를 검증해
+  경로를 `%LOCALAPPDATA%\phone2pad\config.json`에 저장하고 자동으로 다시 확인합니다.
+  파일을 옮길 필요·PATH 변경·관리자 권한이 없습니다. 잘못된 폴더는 한국어 오류
+  ("선택한 폴더에서 adb.exe를 찾을 수 없습니다. platform-tools 폴더를 선택해 주세요.")를
+  띄웁니다. 선택한 경로는 **adb 탐색 순서의 맨 앞**(PATH보다 우선)에서 사용됩니다.
 - **PC(배포)**: **일반 사용자용 Windows 설치 프로그램**(`phone2pad-setup-vX.Y.Z.exe`,
   Inno Setup) 추가 — **관리자 권한 불필요(사용자별 설치)**, **시작 메뉴 `phone2pad`
   바로 가기**와 Windows **"앱 및 기능" 제거 항목** 생성, 설치 직후 실행 옵션 제공.
@@ -33,10 +39,11 @@
   `USB 연결 실패 - 케이블 재연결` / `폰 앱에서 트랙패드 모드 시작 필요` /
   `연결됨 - 트랙패드 사용 중`. (이전에는 여러 상태가 `폰 연결 대기` 하나로 합쳐졌습니다.)
 - **PC**: adb 미탐색 풍선 문구를 "phone2pad를 사용하려면 Android Platform Tools의 adb가
-  필요합니다. 설치 후 다시 확인하세요."로 명확화. QUICKSTART/README/windows-README/ADB-SETUP을
-  실제 첫 실행 흐름(트레이 안내 → 설치 페이지 → exe 옆 platform-tools → 다시 확인)에 맞춰
-  단순화하고, **최신 공식 릴리스는 v0.3.0 게시 전까지 v0.2.2**이며 adb는 **이 버전에서
-  번들하지 않음**을 명시.
+  필요합니다. 설치 후 다시 확인하세요."로 명확화. adb first-run 안내 창과
+  QUICKSTART/README/windows-README/ADB-SETUP을 실제 첫 실행 흐름(트레이 안내 → 설치 페이지
+  → **platform-tools 폴더 선택** → 다시 확인)에 맞춰 정리하고, exe 옆 두기·PATH 등록은
+  고급 방법으로 강등. **최신 공식 릴리스는 v0.3.0 게시 전까지 v0.2.2**이며 adb는 **이
+  버전에서 번들하지 않음**을 명시.
 - **PC**: adb 앱 로컬 탐색 위치를 `tools\platform-tools` → `platform-tools`(실행 파일 옆)로
   단순화. 즉 platform-tools zip을 `phone2pad_tray.exe` 옆에 그대로 풀면 됩니다
   (`…\platform-tools\adb.exe`). PATH·Android SDK 탐색 순서는 그대로입니다.

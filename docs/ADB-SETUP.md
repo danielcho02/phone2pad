@@ -9,9 +9,10 @@ adb는 폰↔PC 사이의 **로컬 USB 통신**에만 쓰입니다. 인터넷으
 > phone2pad는 adb를 **자동으로 내려받거나 설치하지 않습니다.** 아래 안내에 따라
 > 직접 준비해 주세요. **관리자 권한은 필요 없습니다.**
 
-> **트레이가 직접 안내합니다.** `phone2pad_tray.exe`를 실행했을 때 adb가 없으면,
-> 트레이가 설치 안내 창을 띄우고 메뉴에 **[ADB 설치 페이지 열기]** 와 **[ADB 다시 확인]**
-> 항목을 보여줍니다. 아래 내용은 그 보조 설명입니다.
+> **트레이가 직접 안내합니다.** 설치 프로그램(installer)으로 설치하는 것을 권장하며,
+> `phone2pad_tray.exe`를 실행했을 때 adb가 없으면 트레이가 설치 안내 창을 띄우고 메뉴에
+> **[ADB 설치 페이지 열기]**, **[platform-tools 폴더 선택]**, **[ADB 다시 확인]** 항목을
+> 보여줍니다. 아래 **권장 방법**을 그대로 따라 하면 됩니다.
 
 ## 이미 가지고 있나요? (Android Studio 사용자)
 
@@ -24,25 +25,34 @@ Android Studio를 설치했다면 보통 adb가 이미 아래 위치에 있어, 
 
 트레이/콘솔이 곧바로 폰을 기다리면 준비가 끝난 것입니다.
 
-## 새로 설치하기 — 가장 쉬운 방법 (exe 옆에 두기)
+## 새로 설치하기 — 권장: 트레이에서 폴더 선택
 
-별도의 PATH 설정 없이 **폴더만 옮기면** 됩니다.
+파일을 직접 옮길 필요 없이, **압축을 푼 폴더를 트레이에서 선택**하면 됩니다.
 
 1. 트레이 메뉴의 **[ADB 설치 페이지 열기]**(또는 아래 링크)로 공식
    [Android SDK Platform-Tools](https://developer.android.com/tools/releases/platform-tools)
    페이지를 열고, Windows용 zip을 내려받습니다.
-2. zip의 압축을 풉니다. 안에 `platform-tools` 폴더와 그 안의 `adb.exe`가 들어 있습니다.
-3. 그 `platform-tools` 폴더째로 **`phone2pad_tray.exe`가 있는 폴더 안에** 넣습니다.
-   아래처럼 되도록 두면 됩니다.
-
-   ```
-   phone2pad\
-     phone2pad_tray.exe
-     platform-tools\adb.exe
-   ```
-
+2. zip의 **압축을 풉니다.** 안에 `platform-tools` 폴더와 그 안의 `adb.exe`가 들어 있습니다.
+3. 트레이 메뉴에서 **[platform-tools 폴더 선택]**을 누르고, 방금 압축을 푼
+   **`platform-tools` 폴더**를 선택합니다.
+   - 폴더 안에 `adb.exe`가 있어야 합니다. 다른 폴더를 고르면 "선택한 폴더에서 adb.exe를
+     찾을 수 없습니다" 알림이 뜨니, `platform-tools` 폴더를 다시 선택하세요.
 4. 트레이 메뉴에서 **[ADB 다시 확인]**을 누릅니다. 상태가 **폰 연결 대기**로 바뀌면
-   준비 완료입니다. (트레이를 다시 실행할 필요는 없습니다.)
+   준비 완료입니다. (폴더를 선택하면 자동으로 다시 확인하므로 보통 바로 바뀝니다.)
+
+선택한 경로는 `%LOCALAPPDATA%\phone2pad\config.json`에 저장되어 다음 실행에도
+유지됩니다. (관리자 권한·PATH 변경 없음.)
+
+## (고급) exe 옆에 두기
+
+폴더 선택 대신, 압축을 푼 `platform-tools` 폴더째로 **`phone2pad_tray.exe`가 있는 폴더
+안에** 넣어도 됩니다. 아래처럼 되도록 두면 자동 인식됩니다.
+
+```
+phone2pad\
+  phone2pad_tray.exe
+  platform-tools\adb.exe
+```
 
 ## (고급) PATH에 등록하기
 
@@ -58,11 +68,12 @@ setx PATH "$($env:Path);C:\Tools\platform-tools"
 
 ## phone2pad가 adb를 찾는 순서
 
-1. 시스템 `PATH`
-2. `%LOCALAPPDATA%\Android\Sdk\platform-tools\adb.exe`
-3. `%ANDROID_HOME%\platform-tools\adb.exe`
-4. `%ANDROID_SDK_ROOT%\platform-tools\adb.exe`
-5. 실행 파일 옆의 `platform-tools\adb.exe`
+1. 트레이에서 **선택한 adb 경로** (`%LOCALAPPDATA%\phone2pad\config.json`)
+2. 시스템 `PATH`
+3. `%LOCALAPPDATA%\Android\Sdk\platform-tools\adb.exe`
+4. `%ANDROID_HOME%\platform-tools\adb.exe`
+5. `%ANDROID_SDK_ROOT%\platform-tools\adb.exe`
+6. 실행 파일 옆의 `platform-tools\adb.exe`
 
 이 중 **하나만** 충족하면 됩니다. 준비가 끝났는데도 인식되지 않으면, 트레이 메뉴의
 **[ADB 다시 확인]**을 누르고, 폰 화면의 "USB 디버깅 허용" 창을 확인한 뒤 케이블을 다시

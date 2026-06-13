@@ -127,8 +127,16 @@ phone2pad/
           빌드 단계 + 무인 설치→파일/바로 가기/`adb 미설치` 검증→무인 제거 스모크 테스트
           추가(ISCC 부재 시 SKIPPED; 단 v0.3.0 릴리스는 installer/installer-verify PASS 필요,
           `winget install JRSoftware.InnoSetup`).
+        - adb 폴더 선택 UX 추가(파일 이동 불필요): 트레이 메뉴 **[platform-tools 폴더 선택]**
+          (adb 미탐색 시에만, `IFileOpenDialog` 폴더 피커) → 폴더 안 `adb.exe` 검증 →
+          `%LOCALAPPDATA%\phone2pad\config.json`에 경로 저장 → 기존 recheck 흐름 자동 호출.
+          새 `adb_config` 모듈(`serialize`/`parseAdbPath` 순수 + load/save/`adbExeUnder`
+          파일IO; json_lite 재사용). `AdbEnv.configuredAdbPath`를 탐색 후보 맨 앞(PATH보다
+          우선)에 추가. first-run 안내 창과 docs를 폴더 선택 흐름 중심으로 재정리(exe 옆
+          두기/PATH는 고급). 단위 테스트: adb_config 라운드트립 + 구성 경로 우선순위.
         - 실기기 검증(L4) 대기: 트레이 상태 전환 체감, 자동 시작 재부팅 검증, 유휴 CPU 확인,
-          설치 프로그램 실기 설치/제거 + 시작 메뉴 바로 가기 확인.
+          설치 프로그램 실기 설치/제거 + 시작 메뉴 바로 가기 확인, **platform-tools 폴더 선택
+          → config.json 저장 → 폰 연결 대기 전환** 확인.
       - [ ] D-2 폴리시 — 팜 리젝션, 햅틱, 전력 최적화 (이후)
 
 작업 시작 전 이 체크리스트를 갱신하고, Phase 완료 시 체크 표시 후 커밋하라.

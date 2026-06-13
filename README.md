@@ -99,16 +99,19 @@ phone2pad does not ship Google's Platform Tools (redistribution needs separate l
 review), so `adb` is **not bundled**. The app finds `adb` automatically and, when it's
 missing, the tray guides you through setup:
 
-* **Easiest (drop-in):** download Platform Tools and unzip the `platform-tools` folder
-  beside `phone2pad_tray.exe` (so that `…\platform-tools\adb.exe` exists), then click
-  **ADB 다시 확인**. No `PATH` setup, no admin.
+* **Recommended (pick the folder):** download Platform Tools, unzip it, then in the tray
+  click **platform-tools 폴더 선택** and choose the extracted `platform-tools` folder. The
+  selected `adb.exe` path is saved to `%LOCALAPPDATA%\phone2pad\config.json` and re-checked
+  automatically. No file moving, no `PATH` setup, no admin.
 * **Already have it:** Android Studio users usually have `adb` at
   `%LOCALAPPDATA%\Android\Sdk\platform-tools\adb.exe` — it's detected automatically.
-* **Advanced:** put `platform-tools` on your `PATH` (verify with `adb version`).
+* **Advanced:** drop `platform-tools` beside `phone2pad_tray.exe`
+  (so `…\platform-tools\adb.exe` exists), or put it on your `PATH` (verify with `adb version`).
 
 When `adb` is missing the tray shows an **ADB 설치 필요** status, pops a guided Korean
 setup dialog, and offers **ADB 설치 페이지 열기** (opens the official download page only —
-no auto-download) and **ADB 다시 확인** (re-checks without relaunching the tray). The
+no auto-download), **platform-tools 폴더 선택** (point it at the extracted folder), and
+**ADB 다시 확인** (re-checks without relaunching the tray). The
 console `phone2pad_client.exe` prints the same download link and setup steps.
 See [docs/ADB-SETUP.md](docs/ADB-SETUP.md) for step-by-step instructions.
 `adb` is used only for the local USB link between phone and PC — nothing goes online.

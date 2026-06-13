@@ -28,8 +28,9 @@ USB-C로 연결한 Android 폰을 Windows 트랙패드처럼 사용하는 클라
 ---------
 1. adb(Android Platform Tools)가 *필수*입니다. 이 zip에는 포함되어 있지 않습니다.
    걱정하지 마세요 — phone2pad_tray.exe가 adb가 없으면 직접 설치를 안내합니다(아래 사용 방법
-   3번 참고). 가장 쉬운 방법은 platform-tools 폴더를 phone2pad_tray.exe 옆에 두는 것입니다
-   (…\platform-tools\adb.exe). Android Studio를 설치했다면 보통 자동 인식됩니다
+   3번 참고). 권장 방법은 Platform-Tools zip을 받아 압축을 푼 뒤, 트레이 메뉴의
+   "platform-tools 폴더 선택"으로 그 폴더를 고르는 것입니다(파일을 옮길 필요 없음).
+   Android Studio를 설치했다면 보통 자동 인식됩니다
    (%LOCALAPPDATA%\Android\Sdk\platform-tools\adb.exe).
    자세한 안내는 이 폴더의 ADB-SETUP.md를 참고하세요.
    다운로드: https://developer.android.com/tools/releases/platform-tools
@@ -51,10 +52,13 @@ USB-C로 연결한 Android 폰을 Windows 트랙패드처럼 사용하는 클라
    - 사용 방법 열기            : 이 폴더의 QUICKSTART.md 열기
    - Windows 시작 시 자동 실행  : 로그인 시 자동 시작 켜기/끄기 (체크 표시)
    - 종료                      : 트레이 종료
-   - (adb가 없을 때만) ADB 설치 페이지 열기 / ADB 다시 확인 / ADB 설치 안내 열기
+   - (adb가 없을 때만) ADB 설치 페이지 열기 / platform-tools 폴더 선택 /
+     ADB 다시 확인 / ADB 설치 안내 열기
 3. adb가 없으면 상태가 "ADB 설치 필요"로 표시되고 안내 창이 뜹니다. 메뉴의
-   "ADB 설치 페이지 열기"로 Platform-Tools를 받아 압축을 풀고, platform-tools 폴더를
-   phone2pad_tray.exe 옆에 둔 뒤(…\platform-tools\adb.exe), "ADB 다시 확인"을 누릅니다.
+   "ADB 설치 페이지 열기"로 Platform-Tools를 받아 압축을 푼 뒤, "platform-tools 폴더 선택"
+   으로 압축을 푼 폴더를 고르고 "ADB 다시 확인"을 누릅니다(폴더 선택 시 자동으로 다시
+   확인합니다). 선택 경로는 %LOCALAPPDATA%\phone2pad\config.json에 저장됩니다. (대신
+   platform-tools 폴더를 phone2pad_tray.exe 옆에 두어도 됩니다.)
 4. 폰을 USB로 연결 → USB 디버깅 허용 → 폰 앱에서 "트랙패드 모드 시작"을 누르면
    화면이 검게 변하고 상태가 "연결됨 - 트랙패드 사용 중"으로 바뀌며 트랙패드로 동작합니다.
 

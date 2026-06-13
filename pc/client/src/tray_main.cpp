@@ -16,9 +16,13 @@
 #endif
 #include <windows.h>
 #include <shellapi.h>
+#include <shlobj.h>    // IFileOpenDialog, SHCreateItemFromParsingName
+#include <shobjidl.h>  // FOS_PICKFOLDERS
+#include <objbase.h>   // CoInitializeEx / CoCreateInstance
 
 #include <string>
 
+#include "phone2pad/client/adb_config.hpp"
 #include "phone2pad/client/autostart.hpp"
 #include "phone2pad/client/client_service.hpp"
 #include "tray_resource.h"
@@ -41,6 +45,7 @@ constexpr UINT ID_TOGGLE_AUTOSTART = 1005;
 constexpr UINT ID_EXIT = 1006;
 constexpr UINT ID_OPEN_ADB_PAGE = 1007;  // open the official Platform-Tools page
 constexpr UINT ID_RECHECK_ADB = 1008;    // re-run adb discovery (no tray relaunch)
+constexpr UINT ID_PICK_ADB_FOLDER = 1009;  // pick the extracted platform-tools folder
 
 constexpr wchar_t kWindowClass[] = L"phone2pad_tray_wnd";
 constexpr wchar_t kSingletonMutex[] = L"phone2pad_tray_singleton_b6f1";
@@ -134,19 +139,83 @@ void openAdbPage() {
     ShellExecuteW(nullptr, L"open", kAdbPageUrl, nullptr, nullptr, SW_SHOWNORMAL);
 }
 
+void recheckAdb();  // defined below; re-runs adb discovery and shows Korean feedback
+
+// Narrow (active code page) <-> wide conversions. AdbManager/adb_config work in narrow
+// std::string (matching the rest of the codebase's getenv-based paths), while the shell
+// picker and Win32 UI are wide; convert at the boundary with CP_ACP so the round-trip is
+// symmetric with adb discovery.
+std::string narrowFromWide(const std::wstring& w) {
+    if (w.empty()) return std::string();
+    const int n = WideCharToMultiByte(CP_ACP, 0, w.c_str(), static_cast<int>(w.size()),
+                                      nullptr, 0, nullptr, nullptr);
+    std::string out(static_cast<std::size_t>(n), '\0');
+    WideCharToMultiByte(CP_ACP, 0, w.c_str(), static_cast<int>(w.size()), out.data(), n,
+                        nullptr, nullptr);
+    return out;
+}
+
+// Show a modern "select folder" dialog (IFileOpenDialog + FOS_PICKFOLDERS). Returns the
+// chosen folder path, or empty when the user cancels / the dialog can't be created. COM
+// is initialized once in wWinMain.
+std::wstring pickFolderDialog() {
+    std::wstring result;
+    IFileOpenDialog* dialog = nullptr;
+    HRESULT hr = CoCreateInstance(CLSID_FileOpenDialog, nullptr, CLSCTX_INPROC_SERVER,
+                                  IID_PPV_ARGS(&dialog));
+    if (FAILED(hr) || dialog == nullptr) return result;
+
+    DWORD opts = 0;
+    if (SUCCEEDED(dialog->GetOptions(&opts))) {
+        dialog->SetOptions(opts | FOS_PICKFOLDERS | FOS_FORCEFILESYSTEM | FOS_PATHMUSTEXIST);
+    }
+    dialog->SetTitle(L"platform-tools 폴더 선택");
+
+    if (SUCCEEDED(dialog->Show(g_wnd))) {
+        IShellItem* item = nullptr;
+        if (SUCCEEDED(dialog->GetResult(&item)) && item != nullptr) {
+            PWSTR path = nullptr;
+            if (SUCCEEDED(item->GetDisplayName(SIGDN_FILESYSPATH, &path)) && path != nullptr) {
+                result.assign(path);
+                CoTaskMemFree(path);
+            }
+            item->Release();
+        }
+    }
+    dialog->Release();
+    return result;
+}
+
+// Let the user point phone2pad at the extracted platform-tools folder. On a valid pick we
+// persist the adb.exe path (config.json) and re-run discovery via the existing recheck
+// flow, which transitions to the next real state and gives Korean feedback either way.
+void pickAdbFolder() {
+    const std::wstring folder = pickFolderDialog();
+    if (folder.empty()) return;  // cancelled
+
+    const std::optional<std::string> adbExe =
+        adb_config::adbExeUnder(narrowFromWide(folder));
+    if (!adbExe) {
+        MessageBoxW(g_wnd,
+                    L"선택한 폴더에서 adb.exe를 찾을 수 없습니다. "
+                    L"platform-tools 폴더를 선택해 주세요.",
+                    L"phone2pad — ADB 설치 필요", MB_OK | MB_ICONWARNING);
+        return;
+    }
+    adb_config::saveAdbPath(*adbExe);
+    recheckAdb();  // forward-declared above; re-discovers (now finds the configured path)
+}
+
 // First-run setup gate: a plain-Korean dialog shown once per run when adb is missing.
-// Teaches the simplest, non-developer path (drop platform-tools next to the exe), with
-// no mention of GitHub/PATH, and offers to open the official download page.
+// Walks the non-developer through the folder-select flow (download -> extract -> pick the
+// folder -> recheck), with no mention of GitHub/PATH, and offers to open the download page.
 void showAdbSetupDialog() {
     const wchar_t* msg =
-        L"phone2pad는 Android 폰과 USB로 연결하기 위해 adb가 필요합니다.\n\n"
-        L"설치 방법 (가장 쉬움):\n"
-        L"1. [ADB 설치 페이지 열기]로 Android SDK Platform-Tools를 다운로드합니다.\n"
-        L"2. 압축을 푼 platform-tools 폴더를 phone2pad_tray.exe 옆에 둡니다:\n"
-        L"       phone2pad\\\n"
-        L"         phone2pad_tray.exe\n"
-        L"         platform-tools\\adb.exe\n"
-        L"3. 트레이 메뉴에서 [ADB 다시 확인]을 누릅니다.\n\n"
+        L"phone2pad는 Android 폰과 USB로 연결하기 위해 ADB가 필요합니다.\n\n"
+        L"1. [ADB 설치 페이지 열기]로 Android Platform-Tools를 다운로드합니다.\n"
+        L"2. 압축을 풉니다.\n"
+        L"3. 트레이 메뉴에서 [platform-tools 폴더 선택]을 눌러 압축을 푼 폴더를 선택합니다.\n"
+        L"4. [ADB 다시 확인]을 누릅니다.\n\n"
         L"지금 설치 페이지를 여시겠습니까?";
     const int r = MessageBoxW(g_wnd, msg, L"phone2pad — ADB 설치 필요",
                               MB_YESNO | MB_ICONINFORMATION);
@@ -213,6 +282,7 @@ void showContextMenu() {
     const bool adbMissing = g_service != nullptr && !g_service->adbReady();
     if (adbMissing) {
         AppendMenuW(menu, MF_STRING, ID_OPEN_ADB_PAGE, L"ADB 설치 페이지 열기");
+        AppendMenuW(menu, MF_STRING, ID_PICK_ADB_FOLDER, L"platform-tools 폴더 선택");
         AppendMenuW(menu, MF_STRING, ID_RECHECK_ADB, L"ADB 다시 확인");
         AppendMenuW(menu, MF_STRING, ID_OPEN_ADB_GUIDE, L"ADB 설치 안내 열기");
     }
@@ -248,6 +318,9 @@ void showContextMenu() {
             break;
         case ID_OPEN_ADB_PAGE:
             openAdbPage();
+            break;
+        case ID_PICK_ADB_FOLDER:
+            pickAdbFolder();
             break;
         case ID_RECHECK_ADB:
             recheckAdb();
@@ -303,6 +376,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR, int) {
         return 0;
     }
 
+    // COM (apartment-threaded) for the IFileOpenDialog folder picker. Harmless if the
+    // user never opens it; uninitialized on exit.
+    const HRESULT comInit = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
+
     WNDCLASSEXW wc{};
     wc.cbSize = sizeof(wc);
     wc.lpfnWndProc = WndProc;
@@ -357,6 +434,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR, int) {
     service.stop();
     g_service = nullptr;
     Shell_NotifyIconW(NIM_DELETE, &g_nid);
+    if (SUCCEEDED(comInit)) CoUninitialize();
     ReleaseMutex(singleton);
     CloseHandle(singleton);
     return 0;

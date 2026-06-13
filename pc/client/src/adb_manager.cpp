@@ -7,6 +7,7 @@
 #include <filesystem>
 #include <sstream>
 
+#include "phone2pad/client/adb_config.hpp"
 #include "phone2pad/client/process_runner.hpp"
 
 #ifdef _WIN32
@@ -86,6 +87,7 @@ bool AdbManager::recheck() {
 AdbEnv AdbManager::currentEnv() {
     namespace fs = std::filesystem;
     AdbEnv env;
+    if (auto v = adb_config::loadAdbPath()) env.configuredAdbPath = *v;
     if (auto v = envVar("ANDROID_HOME")) env.androidHome = *v;
     if (auto v = envVar("ANDROID_SDK_ROOT")) env.androidSdkRoot = *v;
     if (auto v = envVar("LOCALAPPDATA")) env.localAppData = *v;
@@ -109,6 +111,11 @@ std::vector<AdbCandidate> AdbManager::adbCandidatePaths(const AdbEnv& env) {
     namespace fs = std::filesystem;
     std::vector<AdbCandidate> out;
 
+    // 0) User-selected adb.exe (tray "platform-tools 폴더 선택" -> config.json). Takes
+    //    priority so an explicit choice wins over whatever happens to be on PATH/SDK.
+    if (!env.configuredAdbPath.empty()) {
+        out.push_back({env.configuredAdbPath, "configured path"});
+    }
     // 1) PATH.
     for (const std::string& dir : env.pathDirs) {
         out.push_back({(fs::path(dir) / "adb.exe").string(), "PATH"});

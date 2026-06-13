@@ -10,6 +10,7 @@ add_library(client_core STATIC
     src/gesture_router.cpp
     src/orientation_normalizer.cpp
     src/adb_manager.cpp
+    src/adb_config.cpp
     src/process_runner.cpp
     src/net_client.cpp
     src/client_service.cpp
@@ -47,7 +48,9 @@ if(WIN32)
     # tray.rc embeds assets/phone2pad.ico as the app/tray icon (VS generator compiles
     # the .rc automatically; rc.exe resolves the icon path relative to the .rc file).
     add_executable(phone2pad_tray WIN32 src/tray_main.cpp tray.rc)
-    target_link_libraries(phone2pad_tray PRIVATE client_core shell32 advapi32)
+    # ole32 for the IFileOpenDialog folder picker (configured adb path); shell32/advapi32
+    # are system libs so the release zip stays self-contained.
+    target_link_libraries(phone2pad_tray PRIVATE client_core shell32 advapi32 ole32)
     # tray_resource.h lives in this dir (shared by tray_main.cpp and tray.rc).
     target_include_directories(phone2pad_tray PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
     target_compile_features(phone2pad_tray PRIVATE cxx_std_20)

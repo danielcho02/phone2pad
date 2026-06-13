@@ -41,6 +41,7 @@ struct AdbCandidate {
 // adbCandidatePaths() be tested without touching the real environment/filesystem.
 // Empty strings mean "not set"; pathDirs are the entries of %PATH%.
 struct AdbEnv {
+    std::string configuredAdbPath;  // user-selected adb.exe (config.json); full file path
     std::string androidHome;     // ANDROID_HOME
     std::string androidSdkRoot;  // ANDROID_SDK_ROOT
     std::string localAppData;    // %LOCALAPPDATA%
@@ -82,8 +83,9 @@ public:
     // ---- pure, testable helpers (no filesystem / process access) ----
 
     // Ordered candidate adb.exe locations for the given environment. Order:
-    // PATH -> Android SDK (LOCALAPPDATA, then ANDROID_HOME/ANDROID_SDK_ROOT) ->
-    // app-local platform-tools (cwd) -> executable-relative platform-tools.
+    // configured path (config.json) -> PATH -> Android SDK (LOCALAPPDATA, then
+    // ANDROID_HOME/ANDROID_SDK_ROOT) -> app-local platform-tools (cwd) ->
+    // executable-relative platform-tools.
     static std::vector<AdbCandidate> adbCandidatePaths(const AdbEnv& env);
 
     // Parse raw `adb devices` stdout into device rows.
